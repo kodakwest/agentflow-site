@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>AgentFlow Workbench | Prompt & Agent Environment</title>
+  <meta name="description" content="Optimize LLM prompts, audit agent session hygiene, trace tool execution diversity, and benchmark agent workflow quality.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Shared Style -->
+  <link rel="stylesheet" href="drift.css">
+  
+  <style>
+    .workbench-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media (max-width: 980px) {
+      .workbench-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Sparkline & Charts */
+    .trend-container {
+      background: var(--panel);
+      border: 1px solid var(--border-panel);
+      border-radius: 8px;
+      padding: 1.25rem;
+      position: relative;
+    }
+    
+    .trend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .sparkline-svg {
+      width: 100%;
+      height: 120px;
+      stroke: var(--accent-primary);
+      stroke-width: 2.5;
+      fill: none;
+    }
+    
+    .sparkline-fill {
+      fill: url(#sparklineGrad);
+      stroke: none;
+    }
+    
+    /* Metrics override for 6 columns */
+    .metrics-6 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+    }
+    
+    /* Prompt Analyzer */
+    .analyzer-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .analyzer-results {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      padding: 1.25rem;
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .analyzer-metric {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      padding: 0.5rem 0;
+    }
+    
+    .analyzer-metric:last-child {
+      border-bottom: none;
+    }
+    
+    /* Optimization Feed */
+    .timeline-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    
+    .timeline-feed::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--border-panel);
+    }
+    
+    .timeline-item {
+      position: relative;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: -22px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 2px solid var(--accent-primary);
+    }
+    
+    .timeline-dot--warning {
+      border-color: var(--accent-warning);
+    }
+    
+    .timeline-dot--danger {
+      border-color: var(--accent-danger);
+    }
+    
+    .timeline-header-text {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    
+    .timeline-time {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      margin-bottom: 0.25rem;
+    }
+    
+    .timeline-body {
+      font-size: 0.85rem;
+      color: var(--ink-secondary);
+    }
+    
+    /* Facet Filter Sidebar */
+    .filter-section {
+      border-bottom: 1px solid var(--border-panel);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    
+    .filter-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    
+    .filter-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-secondary);
+      margin-bottom: 0.75rem;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--ink-secondary);
+      cursor: pointer;
+    }
+    
+    .checkbox-label input {
+      accent-color: var(--accent-primary);
+    }
+    
+    /* View Controls */
+    .view-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .explorer-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .explorer-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .explorer-card-body-detail {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      background: rgba(0, 0, 0, 0.15);
+      border-left: 2px solid var(--accent-primary);
+      padding: 0.75rem;
+      border-radius: 0 4px 4px 0;
+      font-family: var(--font-mono);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .explorer-card-body-raw {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem;
+      border-radius: 4px;
+      color: var(--accent-primary);
+      overflow-x: auto;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    
+    <!-- ECOSYSTEM HEADER NAVIGATION -->
+    <header>
+      <a href="index.html" class="nav-logo">
+        <svg class="nav-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+        agent<span>flow</span>
+      </a>
+      
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <nav class="nav-menu" id="navMenu">
+        <a href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Home
+        </a>
+        <a href="chat-deck-landing.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Chat Deck
+        </a>
+        <a href="workbench.html" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          Workbench
+        </a>
+        <a href="control-plane.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Control Plane
+        </a>
+        <a href="#" onclick="alert('Mockup Documentation Link'); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Docs
+        </a>
+        <a href="#" class="drift-btn drift-btn--primary drift-btn--sm nav-cta-mobile" style="display: none;">Launch CLI</a>
+      </nav>
+
+      <div class="nav-right">
+        <a href="#" class="drift-btn drift-btn--primary drift-btn--sm" onclick="alert('Mockup Action: Launching CLI terminal...'); return false;">Launch CLI</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      
+      <!-- HERO TITLE -->
+      <div>
+        <h1 style="margin-bottom: 0.5rem;">Prompt & Agent Workbench</h1>
+        <p>Analyze prompts, track multi-agent session diagnostics, and explore automated hygiene optimization suggestions.</p>
+      </div>
+
+      <!-- TREND SPARKLINES CHART -->
+      <div class="trend-container">
+        <div class="trend-header">
+          <div>
+            <h4 style="font-weight: 600;">Ecosystem Prompt Quality Trend</h4>
+            <p style="font-size:0.75rem; color:var(--ink-muted);">Calculated aggregate score over last 30 days</p>
+          </div>
+          <div class="view-controls">
+            <button class="drift-btn drift-btn--ghost drift-btn--xs" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); color: var(--accent-primary);">30 Days</button>
+            <button class="drift-btn drift-btn--ghost drift-btn--xs" onclick="alert('14 days trend loaded (Mockup)');">14 Days</button>
+            <button class="drift-btn drift-btn--ghost drift-btn--xs" onclick="alert('7 days trend loaded (Mockup)');">7 Days</button>
+          </div>
+        </div>
+        <svg class="sparkline-svg" viewBox="0 0 600 120" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(34, 211, 238, 0.25)" />
+              <stop offset="100%" stop-color="rgba(34, 211, 238, 0.0)" />
+            </linearGradient>
+          </defs>
+          <!-- Sparkline background area -->
+          <path class="sparkline-fill" d="M 0 120 L 0 55 L 50 65 L 100 48 L 150 72 L 200 40 L 250 32 L 300 50 L 350 25 L 400 18 L 450 30 L 500 24 L 550 15 L 600 20 L 600 120 Z" />
+          <!-- Sparkline grid helper lines -->
+          <line x1="0" y1="60" x2="600" y2="60" stroke="rgba(255, 255, 255, 0.03)" stroke-dasharray="4" />
+          <!-- Sparkline trend line -->
+          <path d="M 0 55 L 50 65 L 100 48 L 150 72 L 200 40 L 250 32 L 300 50 L 350 25 L 400 18 L 450 30 L 500 24 L 550 15 L 600 20" />
+          <!-- Points -->
+          <circle cx="200" cy="40" r="4" fill="var(--accent-tertiary)" />
+          <circle cx="400" cy="18" r="4" fill="var(--accent-primary)" />
+          <circle cx="600" cy="20" r="4" fill="var(--accent-primary)" />
+        </svg>
+      </div>
+
+      <!-- METRICS GRID (6 column style) -->
+      <div class="metrics-6">
+        <!-- Metric Card 1 -->
+        <div class="drift-card metric-card" style="padding: 1rem;">
+          <div class="metric-card-label" style="font-size:0.65rem;">Prompt Quality</div>
+          <div class="metric-card-value font-mono" style="font-size:1.5rem;">86.4%</div>
+          <div class="metric-card-sub" style="font-size:0.65rem;"><span class="trend-up">▲ 2.1%</span> vs avg</div>
+        </div>
+        <!-- Metric Card 2 -->
+        <div class="drift-card metric-card" style="padding: 1rem;">
+          <div class="metric-card-label" style="font-size:0.65rem;">Session Hygiene</div>
+          <div class="metric-card-value font-mono" style="font-size:1.5rem;">92.1%</div>
+          <div class="metric-card-sub" style="font-size:0.65rem;"><span class="trend-up">▲ 0.8%</span> excellent</div>
+        </div>
+        <!-- Metric Card 3 -->
+        <div class="drift-card metric-card" style="padding: 1rem;">
+          <div class="metric-card-label" style="font-size:0.65rem;">Code Review</div>
+          <div class="metric-card-value font-mono" style="font-size:1.5rem;">88.0</div>
+          <div class="metric-card-sub" style="font-size:0.65rem;"><span class="trend-down">▼ 1.5 pts</span> linter warnings</div>
+        </div>
+        <!-- Metric Card 4 -->
+        <div class="drift-card metric-card" style="padding: 1rem;">
+          <div class="metric-card-label" style="font-size:0.65rem;">Tool Mastery</div>
+          <div class="metric-card-value font-mono" style="font-size:1.5rem;">95.4%</div>
+          <div class="metric-card-sub" style="font-size:0.65rem;"><span class="trend-up">12 custom</span> commands</div>
+        </div>
+        <!-- Metric Card 5 -->
+        <div class="drift-card metric-card" style="padding: 1rem;">
+          <div class="metric-card-label" style="font-size:0.65rem;">Cost Burn</div>
+          <div class="metric-card-value font-mono" style="font-size:1.5rem;">$184.50</div>
+          <div class="metric-card-sub" style="font-size:0.65rem;">Monthly Accum.</div>
+        </div>
+        <!-- Metric Card 6 -->
+        <div class="drift-card metric-card" style="padding: 1rem; border-color: rgba(244, 114, 182, 0.2);">
+          <div class="metric-card-label" style="font-size:0.65rem;">Runaway Loops</div>
+          <div class="metric-card-value font-mono" style="font-size:1.5rem; color: var(--accent-warning);">1</div>
+          <div class="metric-card-sub" style="font-size:0.65rem; color: var(--accent-warning);">Reframe required</div>
+        </div>
+      </div>
+
+      <!-- MAIN WORKBENCH SECTION -->
+      <div class="workbench-grid">
+        
+        <!-- SIDEBAR: SESSION EXPLORER FACET FILTERS -->
+        <div class="drift-card" style="padding: 1.25rem; height: fit-content;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-panel); padding-bottom: 0.5rem;">Session Explorer</h3>
+          
+          <!-- Filter 1: Agent Select -->
+          <div class="filter-section">
+            <div class="filter-title">Orchestrator Agent</div>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" class="agent-filter" value="Codex" checked> Codex
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="agent-filter" value="agy" checked> agy (Self)
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="agent-filter" value="Hermes" checked> Hermes
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="agent-filter" value="Chat Deck" checked> Chat Deck
+              </label>
+            </div>
+          </div>
+
+          <!-- Filter 2: Date Range -->
+          <div class="filter-section">
+            <div class="filter-title">Date Period</div>
+            <select class="drift-input font-mono" style="font-size:0.8rem; padding: 0.4rem;" id="dateFilter">
+              <option value="today">Today</option>
+              <option value="7days" selected>Last 7 Days</option>
+              <option value="30days">Last 30 Days</option>
+            </select>
+          </div>
+
+          <!-- Filter 3: Project -->
+          <div class="filter-section">
+            <div class="filter-title">Active Project</div>
+            <select class="drift-input font-mono" style="font-size:0.8rem; padding: 0.4rem;" id="projectFilter">
+              <option value="all">All Projects</option>
+              <option value="agentflow-site">agentflow-site</option>
+              <option value="sentinel">medical-sentinel</option>
+              <option value="cloud-db">infrastructure-db</option>
+            </select>
+          </div>
+
+          <!-- Filter 4: Session Outcome -->
+          <div class="filter-section">
+            <div class="filter-title">Outcome Status</div>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" class="status-filter" value="success" checked> Success
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="status-filter" value="warning" checked> Warnings
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="status-filter" value="error" checked> Errors
+              </label>
+            </div>
+          </div>
+          
+          <button class="drift-btn drift-btn--secondary drift-btn--sm" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="resetFilters()">Reset Explorer</button>
+        </div>
+
+        <!-- MAIN AREA: PROMPT ANALYZER & TIMELINES -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          
+          <!-- Prompt Analyzer Card -->
+          <div class="drift-card drift-hud-frame">
+            <span class="drift-hud-readout">Prompt Analyzer Gate</span>
+            <div class="analyzer-wrap">
+              <p style="font-size:0.875rem; margin-bottom:0.25rem;">Paste a coding prompt below to run local diagnostics before dispatching to model context.</p>
+              <textarea class="drift-textarea font-mono" id="analyzerInput" placeholder="Write or paste your agent prompt here (e.g. 'Read styles.css and update the color variables of the drift cards to neon gold...')"></textarea>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.75rem; color: var(--ink-muted);" id="charCount">0 characters</span>
+                <button class="drift-btn drift-btn--primary" id="btnAnalyze">Analyze Prompt</button>
+              </div>
+              
+              <!-- Analyzer Dynamic Output -->
+              <div class="analyzer-results" id="analyzerResults">
+                <h4 style="margin-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:0.5rem;">Analysis Summary</h4>
+                <div class="analyzer-metric">
+                  <span class="text-muted">Prompt Quality Score:</span>
+                  <span class="font-mono text-accent" id="resScore">88%</span>
+                </div>
+                <div class="analyzer-metric">
+                  <span class="text-muted">File Reference Check:</span>
+                  <span class="font-mono" id="resFileRef" style="color: var(--accent-secondary);">PASSED</span>
+                </div>
+                <div class="analyzer-metric">
+                  <span class="text-muted">Context Scope Specificity:</span>
+                  <span class="font-mono text-accent" id="resSpec">High</span>
+                </div>
+                <div style="margin-top:0.75rem;">
+                  <span class="drift-label" style="margin-bottom:0.25rem;">Coach Recommendations:</span>
+                  <ul style="font-size:0.8rem; color:var(--ink-secondary); padding-left:1.25rem;" id="resRecs">
+                    <li>(Prompt looks solid. File references are correctly specified.)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optimization Timeline & explorer matches -->
+          <div class="grid-2">
+            
+            <!-- Left Panel: Session Cards (Explorer output) -->
+            <div class="drift-card" style="display:flex; flex-direction:column; gap:1rem;">
+              <div class="flex-between" style="border-bottom:1px solid var(--border-panel); padding-bottom:0.5rem;">
+                <h3 style="font-size: 1rem;">Matched Sessions</h3>
+                <div class="view-controls">
+                  <button class="drift-btn drift-btn--ghost drift-btn--xs" id="btnViewSummary" style="background: rgba(255,255,255,0.04); color: var(--accent-primary);">Summary</button>
+                  <button class="drift-btn drift-btn--ghost drift-btn--xs" id="btnViewDetail">Detail</button>
+                  <button class="drift-btn drift-btn--ghost drift-btn--xs" id="btnViewRaw">Raw</button>
+                </div>
+              </div>
+              
+              <div id="sessionResultsContainer" style="display:flex; flex-direction:column; gap:1rem;">
+                
+                <!-- Session Row 1 -->
+                <div class="drift-card session-match-card" data-agent="Codex" data-status="success" style="padding:1rem; border-color: rgba(255,255,255,0.03); background: rgba(255,255,255,0.01);">
+                  <div class="explorer-card-header">
+                    <div>
+                      <span class="font-mono text-accent" style="font-size:0.85rem; font-weight:600;">session_8f2d9</span>
+                      <div class="text-muted" style="font-size:0.7rem; margin-top:0.15rem;">Project: agentflow-site | 2026-05-26 00:04</div>
+                    </div>
+                    <span class="badge badge--primary">Codex</span>
+                  </div>
+                  <div class="explorer-card-body-summary" style="font-size:0.8rem; color:var(--ink-secondary); margin-top:0.5rem;">
+                    Completed specification build for design-brief templates. All assets exported properly.
+                  </div>
+                  <div class="explorer-card-body-detail" style="display:none; margin-top:0.5rem;">
+Prompt: "Create design tokens for Drift v2.0 in style blocks. Output layout variables. Confirm tests."
+Response: "Code block written successfully to drift.css. 0 errors, 4 tests passed."
+Tools: write_file, run_command, verify.
+                  </div>
+                  <div class="explorer-card-body-raw" style="margin-top:0.5rem;">
+{
+  "id": "session_8f2d9",
+  "agent": "Codex",
+  "status": "success",
+  "project": "agentflow-site",
+  "prompt_quality": 0.88,
+  "tokens": 14200,
+  "cost": 0.071,
+  "tool_calls": 3
+}
+                  </div>
+                </div>
+
+                <!-- Session Row 2 -->
+                <div class="drift-card session-match-card" data-agent="agy" data-status="warning" style="padding:1rem; border-color: rgba(255,255,255,0.03); background: rgba(255,255,255,0.01);">
+                  <div class="explorer-card-header">
+                    <div>
+                      <span class="font-mono text-accent" style="font-size:0.85rem; font-weight:600;">session_7c9a1</span>
+                      <div class="text-muted" style="font-size:0.7rem; margin-top:0.15rem;">Project: agentflow-site | 2026-05-25 23:51</div>
+                    </div>
+                    <span class="badge badge--tertiary">agy (Self)</span>
+                  </div>
+                  <div class="explorer-card-body-summary" style="font-size:0.8rem; color:var(--ink-secondary); margin-top:0.5rem;">
+                    Refined marketing hero mesh rotation variables. Encountered tool loop warning: 9 read file retries.
+                  </div>
+                  <div class="explorer-card-body-detail" style="display:none; margin-top:0.5rem;">
+Prompt: "Adjust gradient speeds inside styling mesh, rerun and find mismatch in compilation output."
+Response: "Calculated layout offsets. 9 tool loops executed in search of missing config variables."
+Tools: read_file, grep_search, write_file.
+                  </div>
+                  <div class="explorer-card-body-raw" style="margin-top:0.5rem;">
+{
+  "id": "session_7c9a1",
+  "agent": "agy",
+  "status": "warning",
+  "project": "agentflow-site",
+  "prompt_quality": 0.72,
+  "tokens": 82400,
+  "cost": 0.576,
+  "tool_calls": 9
+}
+                  </div>
+                </div>
+
+                <!-- Session Row 3 -->
+                <div class="drift-card session-match-card" data-agent="Hermes" data-status="success" style="padding:1rem; border-color: rgba(255,255,255,0.03); background: rgba(255,255,255,0.01);">
+                  <div class="explorer-card-header">
+                    <div>
+                      <span class="font-mono text-accent" style="font-size:0.85rem; font-weight:600;">session_5d1f9</span>
+                      <div class="text-muted" style="font-size:0.7rem; margin-top:0.15rem;">Project: sentinel | 2026-05-25 21:40</div>
+                    </div>
+                    <span class="badge">Hermes</span>
+                  </div>
+                  <div class="explorer-card-body-summary" style="font-size:0.8rem; color:var(--ink-secondary); margin-top:0.5rem;">
+                    Analyzed clinical intake records API and scaffolded mock database routers.
+                  </div>
+                  <div class="explorer-card-body-detail" style="display:none; margin-top:0.5rem;">
+Prompt: "Setup clinical model entity routing for patients, include test suite validations."
+Response: "Generated routes/patients.py, mock test_patients.py. All local checks passed."
+Tools: write_file, execute_command.
+                  </div>
+                  <div class="explorer-card-body-raw" style="margin-top:0.5rem;">
+{
+  "id": "session_5d1f9",
+  "agent": "Hermes",
+  "status": "success",
+  "project": "sentinel",
+  "prompt_quality": 0.94,
+  "tokens": 41900,
+  "cost": 0.084,
+  "tool_calls": 2
+}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Right Panel: Optimization Feed Suggestions -->
+            <div class="drift-card" style="display:flex; flex-direction:column; gap:1rem;">
+              <h3 style="font-size: 1rem; border-bottom:1px solid var(--border-panel); padding-bottom:0.5rem;">Optimization Suggestions Feed</h3>
+              
+              <div class="timeline-feed">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <div class="timeline-time">Today, 00:09 — Quality Alert</div>
+                  <div class="timeline-header-text">Add file references to 3 prompts</div>
+                  <div class="timeline-body">
+                    Coach scanned your last 5 prompts for Codex. Three of them lacked explicit workspace file links, resulting in a 15% increase in research token overhead.
+                  </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item">
+                  <span class="timeline-dot timeline-dot--danger"></span>
+                  <div class="timeline-time">Yesterday, 19:12 — Guard Alert</div>
+                  <div class="timeline-header-text">Runaway Loop Detected (session_4e3a2)</div>
+                  <div class="timeline-body">
+                    Codex surpassed 12 tool operations (14 reached) without terminal state convergence. Engine reframe was auto-triggered. Recommend checking path exclusions.
+                  </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item">
+                  <span class="timeline-dot timeline-dot--warning"></span>
+                  <div class="timeline-time">May 24, 14:05 — Hygiene Suggestion</div>
+                  <div class="timeline-header-text">Session Exceeded 100K Tokens soft cap</div>
+                  <div class="timeline-body">
+                    Your active session with agy has reached 112,000 tokens. To maintain optimal speed and response accuracy, use the slash command `/new` to reset context.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: auto; padding: 2rem 0; border-top: 1px solid var(--border-panel); text-align: center; font-size: 0.75rem; color: var(--ink-muted);">
+      <div>&copy; 2026 AgentFlow Systems. Designed with Drift v2 Design System.</div>
+    </footer>
+
+  </div>
+
+  <!-- Scroll to top button -->
+  <button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <script>
+    // ── Theme Toggle ──
+    (function initTheme() {
+      const stored = localStorage.getItem('agentflow-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? '' : 'light');
+      const icon = document.getElementById('themeIcon');
+      if (theme === 'light' && icon) {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+      }
+      document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const newTheme = isLight ? '' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('agentflow-theme', newTheme || 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) {
+          icon.innerHTML = isLight
+            ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+            : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+        }
+      });
+    })();
+
+    // ── Mobile Menu Toggle ──
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    navToggle.addEventListener('click', () => {
+      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', !expanded);
+      navMenu.classList.toggle('open');
+    });
+
+    // ── Prompt Analyzer Logic ──
+    const analyzerInput = document.getElementById('analyzerInput');
+    const charCountText = document.getElementById('charCount');
+    const btnAnalyze = document.getElementById('btnAnalyze');
+    const analyzerResults = document.getElementById('analyzerResults');
+    const resScore = document.getElementById('resScore');
+    const resFileRef = document.getElementById('resFileRef');
+    const resSpec = document.getElementById('resSpec');
+    const resRecs = document.getElementById('resRecs');
+
+    analyzerInput.addEventListener('input', () => {
+      const chars = analyzerInput.value.length;
+      charCountText.innerText = `${chars} character${chars === 1 ? '' : 's'}`;
+    });
+
+    btnAnalyze.addEventListener('click', () => {
+      const val = analyzerInput.value.trim();
+      if (!val) {
+        alert("Please write or paste a prompt to analyze.");
+        return;
+      }
+      
+      // Simulate loading state
+      btnAnalyze.innerText = "Analyzing...";
+      btnAnalyze.disabled = true;
+
+      setTimeout(() => {
+        btnAnalyze.innerText = "Analyze Prompt";
+        btnAnalyze.disabled = false;
+        
+        let score = 75;
+        let fileRef = "FAILED";
+        let spec = "Low";
+        let recs = [];
+
+        // Simple parsing rule simulation
+        if (val.length > 120) {
+          score += 10;
+          spec = "Medium";
+        }
+        if (val.length > 250) {
+          score += 5;
+          spec = "High";
+        }
+        
+        const hasFileKeywords = /file|path|ref|styles|css|html|js|py|json|md|src|\//i.test(val);
+        if (hasFileKeywords) {
+          score += 12;
+          fileRef = "PASSED";
+        } else {
+          recs.push("Add explicit file references (e.g. [styles.css](file:///...) or file paths) to reduce context retrieval ambiguity.");
+        }
+
+        const hasGoalKeywords = /create|build|fix|update|add|write|make|refactor/i.test(val);
+        if (!hasGoalKeywords) {
+          score -= 15;
+          recs.push("Clarify the primary action or goal verb (e.g., 'Refactor class X' or 'Create function Y') to establish a clear exit criteria.");
+        }
+
+        if (val.length < 40) {
+          score = Math.min(score, 45);
+          spec = "Low";
+          recs.push("Prompt is too short. Include background context, language specifications, and linting guidelines to avoid generic outputs.");
+        }
+
+        // Clip score
+        score = Math.max(15, Math.min(100, score));
+
+        // Update UI
+        resScore.innerText = `${score}%`;
+        resScore.style.color = score > 85 ? "var(--accent-secondary)" : (score > 60 ? "var(--accent-primary)" : "var(--accent-danger)");
+        
+        resFileRef.innerText = fileRef;
+        resFileRef.style.color = fileRef === "PASSED" ? "var(--accent-secondary)" : "var(--accent-danger)";
+        
+        resSpec.innerText = spec;
+        resSpec.style.color = spec === "High" ? "var(--accent-primary)" : (spec === "Medium" ? "var(--ink)" : "var(--ink-muted)");
+
+        if (recs.length === 0) {
+          resRecs.innerHTML = "<li><span style='color:var(--accent-secondary);'>✓</span> Prompt structure complies with Coach principles. Fully optimized for execution.</li>";
+        } else {
+          resRecs.innerHTML = recs.map(r => `<li><span style='color:var(--accent-warning);'>⚠</span> ${r}</li>`).join('');
+        }
+
+        analyzerResults.style.display = "block";
+      }, 750);
+    });
+
+    // ── Session Explorer Facet Filter Logic ──
+    const agentFilters = document.querySelectorAll('.agent-filter');
+    const statusFilters = document.querySelectorAll('.status-filter');
+    const projectFilter = document.getElementById('projectFilter');
+    const cards = document.querySelectorAll('.session-match-card');
+
+    function filterSessions() {
+      const selectedAgents = Array.from(agentFilters).filter(c => c.checked).map(c => c.value);
+      const selectedStatuses = Array.from(statusFilters).filter(c => c.checked).map(c => c.value);
+      const selectedProject = projectFilter.value;
+
+      cards.forEach(card => {
+        const agent = card.getAttribute('data-agent');
+        const status = card.getAttribute('data-status');
+        const rawText = card.innerText.toLowerCase();
+        
+        let show = true;
+        
+        // Agent check
+        // Note: 'agy (Self)' maps to card data-agent='agy', checkbox value='agy'
+        if (!selectedAgents.includes(agent)) show = false;
+        
+        // Status check
+        if (!selectedStatuses.includes(status)) show = false;
+
+        // Project check
+        if (selectedProject !== 'all') {
+          if (!rawText.includes(selectedProject)) show = false;
+        }
+
+        card.style.display = show ? '' : 'none';
+      });
+    }
+
+    agentFilters.forEach(f => f.addEventListener('change', filterSessions));
+    statusFilters.forEach(f => f.addEventListener('change', filterSessions));
+    projectFilter.addEventListener('change', filterSessions);
+
+    function resetFilters() {
+      agentFilters.forEach(f => f.checked = true);
+      statusFilters.forEach(f => f.checked = true);
+      projectFilter.value = 'all';
+      filterSessions();
+    }
+
+    // ── View Toggle (Summary / Detail / Raw) ──
+    const btnViewSummary = document.getElementById('btnViewSummary');
+    const btnViewDetail = document.getElementById('btnViewDetail');
+    const btnViewRaw = document.getElementById('btnViewRaw');
+
+    function selectViewButton(activeBtn) {
+      [btnViewSummary, btnViewDetail, btnViewRaw].forEach(btn => {
+        btn.style.background = 'transparent';
+        btn.style.borderColor = 'transparent';
+        btn.style.color = 'var(--ink-secondary)';
+      });
+      activeBtn.style.background = 'rgba(255,255,255,0.04)';
+      activeBtn.style.color = 'var(--accent-primary)';
+      activeBtn.style.borderColor = 'rgba(255,255,255,0.08)';
+    }
+
+    btnViewSummary.addEventListener('click', () => {
+      selectViewButton(btnViewSummary);
+      document.querySelectorAll('.explorer-card-body-summary').forEach(el => el.style.display = 'block');
+      document.querySelectorAll('.explorer-card-body-detail').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.explorer-card-body-raw').forEach(el => el.style.display = 'none');
+    });
+
+    btnViewDetail.addEventListener('click', () => {
+      selectViewButton(btnViewDetail);
+      document.querySelectorAll('.explorer-card-body-summary').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.explorer-card-body-detail').forEach(el => el.style.display = 'block');
+      document.querySelectorAll('.explorer-card-body-raw').forEach(el => el.style.display = 'none');
+    });
+
+    btnViewRaw.addEventListener('click', () => {
+      selectViewButton(btnViewRaw);
+      document.querySelectorAll('.explorer-card-body-summary').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.explorer-card-body-detail').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.explorer-card-body-raw').forEach(el => el.style.display = 'block');
+    });
+
+    // ── Scroll to Top button ──
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
