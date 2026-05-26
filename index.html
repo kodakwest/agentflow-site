@@ -1,0 +1,2122 @@
+<!--
+---
+title: "AgentFlow Marketing Site"
+artifact_type: Knowledge_Base
+source_context: Drift redesign marketing site build
+domain: Cloud/Infrastructure
+systems: AgentFlow
+primary_entities: AgentFlow; AI Agent Orchestration; Drift Design System
+last_updated: 2026-05-25
+status: active
+---
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Tags -->
+  <title>AgentFlow | Turn Prompts Into Pipelines</title>
+  <meta name="description" content="The open-source orchestration layer for LLM workflows. Build secure, local-first AI agents from the ground up and run where your data lives.">
+  
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="AgentFlow | Turn Prompts Into Pipelines">
+  <meta property="og:description" content="Build secure, local-first AI agents from the ground up and run where your data lives.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://agentflow.dev">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       DRIFT DESIGN SYSTEM v2.0 — CANONICAL STYLES
+       ═══════════════════════════════════════════════════════════════ */
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* Backgrounds */
+      --bg-deep: #0B0B12;
+      --bg-base: #0c0d0f;
+      --bg-alt: #030712;
+      --panel: #111215;
+      --surface: #17181c;
+      --border-panel: rgba(255, 255, 255, 0.05);
+
+      /* Typography ink */
+      --ink: #f2f0e8;
+      --ink-secondary: #a8a6a0;
+      --ink-muted: #6b6a66;
+
+      /* Accent Palette (Domain: Cloud/Infrastructure = Teal) */
+      --accent-primary: #22d3ee;
+      --accent-primary-rgb: 34, 211, 238;
+      --accent-secondary: #34d399;
+      --accent-secondary-rgb: 52, 211, 153;
+      --accent-tertiary: #818cf8;
+      --accent-tertiary-rgb: 129, 140, 248;
+      --accent-warning: #f472b6;
+
+      /* Glassmorphism */
+      --glass-bg: rgba(17, 18, 21, 0.75);
+      --glass-border: rgba(34, 211, 238, 0.15);
+      --glass-blur: 16px;
+      --grain-opacity: 0.035;
+
+      /* Font Stacks */
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Layout Dimensions */
+      --content-max: 1200px;
+      --header-height: 80px;
+
+      /* Animation patterns */
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --duration-fast: 150ms;
+      --duration-base: 300ms;
+      --duration-slow: 500ms;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LIGHT THEME — Warm, colorful alternative
+       ═══════════════════════════════════════════════════════════════ */
+    [data-theme="light"] {
+      --bg-deep: #f8f6f2;
+      --bg-base: #f0ede8;
+      --bg-alt: #e8e4de;
+      --panel: #ffffff;
+      --surface: #f5f3ef;
+      --border-panel: rgba(0, 0, 0, 0.06);
+
+      --ink: #1a1a1a;
+      --ink-secondary: #5a5a5a;
+      --ink-muted: #9a9a9a;
+
+      --accent-primary: #0ea5e9;
+      --accent-primary-rgb: 14, 165, 233;
+      --accent-secondary: #10b981;
+      --accent-secondary-rgb: 16, 185, 129;
+      --accent-tertiary: #8b5cf6;
+      --accent-tertiary-rgb: 139, 92, 246;
+
+      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(14, 165, 233, 0.2);
+      --glass-blur: 16px;
+      --grain-opacity: 0.015;
+
+      /* Card shadow for light mode */
+      --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --card-shadow-hover: 0 10px 25px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04);
+    }
+    [data-theme="light"] .drift-card {
+      box-shadow: var(--card-shadow);
+    }
+    [data-theme="light"] .drift-card:hover {
+      box-shadow: var(--card-shadow-hover);
+    }
+    [data-theme="light"] .drift-card--glass {
+      box-shadow: var(--card-shadow);
+    }
+    [data-theme="light"] .drift-hud-frame {
+      border-color: rgba(14, 165, 233, 0.2);
+    }
+
+    /* ── Base Setup ── */
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg-deep);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    /* ── Scrollbars ── */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-deep);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--panel);
+      border-radius: 4px;
+      border: 2px solid var(--bg-deep);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-primary);
+    }
+
+    /* Selection Highlighting */
+    ::selection {
+      background: rgba(var(--accent-primary-rgb), 0.25);
+      color: var(--ink);
+    }
+
+    /* ── Overlays (Grain & Scanline) ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      pointer-events: none;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(var(--accent-primary-rgb), 0.008) 2px,
+        rgba(var(--accent-primary-rgb), 0.008) 4px
+      );
+    }
+
+    /* ── App Shell / Layout ── */
+    .app-shell {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 6rem 0;
+      position: relative;
+    }
+    
+    section + section {
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    /* ── Typography Utilities ── */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    
+    p {
+      color: var(--ink-secondary);
+      font-size: 1rem;
+    }
+
+    .font-mono {
+      font-family: var(--font-mono);
+    }
+
+    /* ── Button Components ── */
+    .drift-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 0.875rem;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      border: 1px solid transparent;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .drift-btn--primary {
+      background: var(--accent-primary);
+      color: var(--bg-deep);
+      border-color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    .drift-btn--primary:hover {
+      background: transparent;
+      color: var(--accent-primary);
+      box-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.35);
+    }
+    
+    .drift-btn--primary:focus-visible {
+      box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.4);
+    }
+
+    .drift-btn--secondary {
+      background: rgba(var(--accent-primary-rgb), 0.03);
+      color: var(--accent-primary);
+      border-color: rgba(var(--accent-primary-rgb), 0.25);
+    }
+
+    .drift-btn--secondary:hover {
+      border-color: var(--accent-primary);
+      background: rgba(var(--accent-primary-rgb), 0.08);
+      box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.15);
+    }
+
+    .drift-btn--ghost {
+      background: transparent;
+      color: var(--ink-secondary);
+    }
+
+    .drift-btn--ghost:hover {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* ── Inputs & Forms ── */
+    .drift-input {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 0.625rem 0.875rem;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      color: var(--ink);
+      transition: border-color 0.15s ease;
+      width: 100%;
+    }
+    .drift-input::placeholder {
+      color: var(--ink-muted);
+    }
+    .drift-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+
+    /* ── Cards & Panels ── */
+    .drift-card {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: border-color var(--duration-base) var(--ease-out), 
+                  transform var(--duration-base) var(--ease-out),
+                  box-shadow var(--duration-base) var(--ease-out);
+    }
+
+    .drift-card:hover {
+      border-color: rgba(var(--accent-primary-rgb), 0.2);
+      transform: translateY(-3px);
+    }
+
+    .drift-card--glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--glass-border);
+    }
+
+    .drift-card--interactive {
+      cursor: pointer;
+    }
+
+    .drift-card--interactive:hover {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 25px rgba(var(--accent-primary-rgb), 0.08);
+    }
+
+    /* ── HUD Frames & Brackets ── */
+    .drift-hud-frame {
+      position: relative;
+      border: 1px solid rgba(var(--accent-primary-rgb), 0.1);
+      background: rgba(11, 11, 18, 0.4);
+      padding: 2rem;
+    }
+
+    .drift-hud-frame::before,
+    .drift-hud-frame::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: var(--accent-primary);
+      border-style: solid;
+      pointer-events: none;
+    }
+
+    .drift-hud-frame::before {
+      top: -1px;
+      left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .drift-hud-frame::after {
+      bottom: -1px;
+      right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .drift-hud-readout {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    /* ── Scroll Reveal ── */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+    }
+
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Scroll-to-Top Button ── */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.8) translateY(10px);
+      pointer-events: none;
+      z-index: 99;
+      transition: all var(--duration-base) var(--ease-out);
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    .scroll-top:hover {
+      border-color: var(--accent-primary);
+      background: rgba(var(--accent-primary-rgb), 0.1);
+      box-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.2);
+    }
+
+    /* ── Hide sections for search filtering ── */
+    .section-hidden {
+      display: none !important;
+    }
+
+    /* ── Header & Navigation (Step 2) ── */
+    header {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border-bottom: 1px solid var(--glass-border);
+      margin: 0 -1.5rem;
+      padding: 0 1.5rem;
+      transition: background var(--duration-base) var(--ease-out);
+    }
+
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+      font-family: var(--font-sans);
+      letter-spacing: -0.03em;
+    }
+
+    .nav-logo span {
+      color: var(--accent-primary);
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-menu a {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all var(--duration-fast) var(--ease-out);
+      font-weight: 500;
+    }
+
+    .nav-menu a:hover {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-menu a.active {
+      color: var(--accent-primary);
+      background: rgba(var(--accent-primary-rgb), 0.08);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+    }
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: var(--ink-secondary);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover {
+      color: var(--accent-primary);
+      background: rgba(128, 128, 128, 0.08);
+    }
+
+    .nav-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 0.5rem;
+      outline: none;
+    }
+
+    .drift-btn--sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-menu {
+        display: none;
+        position: absolute;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        background: var(--panel);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 0.75rem;
+        align-items: stretch;
+      }
+      
+      .nav-menu.open {
+        display: flex;
+      }
+      
+      .nav-menu a {
+        width: 100%;
+        padding: 0.75rem 1rem;
+      }
+      
+      .nav-toggle {
+        display: block;
+      }
+      
+      .nav-cta {
+        display: none;
+      }
+      
+      .nav-menu .nav-cta-mobile {
+        display: inline-flex !important;
+      }
+    }
+
+    /* ── Hero Section (Step 3) ── */
+    .hero-section {
+      min-height: calc(85vh - var(--header-height));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 4rem 0 2rem;
+    }
+
+    .hero-mesh {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.12;
+      background-image: 
+        linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: center top;
+      transform: perspective(600px) rotateX(60deg) translateY(-80px) translateZ(0);
+      transform-origin: top center;
+      animation: grid-scroll 24s linear infinite;
+    }
+
+    @keyframes grid-scroll {
+      from { background-position: center 0; }
+      to { background-position: center 960px; }
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .hero-hud-frame {
+      max-width: 800px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      padding: 3rem 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-tagline {
+      font-size: clamp(2.25rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--ink) 30%, var(--accent-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+
+    .hero-subhead {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--ink-secondary);
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    .hero-form {
+      display: flex;
+      width: 100%;
+      max-width: 500px;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      z-index: 2;
+    }
+
+    .hero-form .drift-input {
+      font-family: var(--font-mono);
+      background: rgba(17, 18, 21, 0.8);
+      color: var(--ink);
+    }
+
+    .hero-form .drift-btn {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .hero-subtext {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+    }
+
+    .hero-scroll-indicator {
+      margin-top: 3rem;
+      font-family: var(--font-mono);
+      color: var(--accent-primary);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.7;
+      text-decoration: none;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    .hero-scroll-indicator:hover {
+      opacity: 1;
+    }
+
+    .terminal-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 1.1em;
+      background: var(--accent-primary);
+      animation: cursor-blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes cursor-blink {
+      50% { opacity: 0; }
+    }
+
+    /* ── Problem Section / Why AgentFlow (Step 4) ── */
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.0625rem;
+      color: var(--ink-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .card-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .why-card {
+      position: relative;
+    }
+
+    .why-icon {
+      color: var(--accent-primary);
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      transition: transform var(--duration-base) var(--ease-spring);
+    }
+
+    .why-card:hover .why-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .why-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+
+    .why-desc {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+    }
+
+    /* ── How It Works Section (Step 5) ── */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3rem;
+      position: relative;
+      margin-bottom: 4rem;
+    }
+
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .flow-number-badge {
+      font-family: var(--font-mono);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(var(--accent-primary-rgb), 0.1);
+      border: 1px solid var(--accent-primary);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.15);
+    }
+
+    .flow-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+
+    .flow-desc {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    .arch-panel {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .arch-svg-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    
+    .arch-svg {
+      min-width: 700px;
+      display: block;
+    }
+    
+    .arch-node {
+      transition: transform var(--duration-base) var(--ease-spring);
+    }
+    
+    .arch-node:hover {
+      filter: brightness(1.3);
+      stroke: var(--accent-primary);
+      stroke-width: 2;
+    }
+
+    /* Connecting lines between steps (desktop only) */
+    @media (min-width: 769px) {
+      .flow-grid::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 15%;
+        right: 15%;
+        height: 1px;
+        border-top: 1.5px dashed rgba(var(--accent-primary-rgb), 0.25);
+        z-index: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .flow-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      
+      /* Vertical connecting line */
+      .flow-grid::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 50%;
+        width: 1px;
+        border-left: 1.5px dashed rgba(var(--accent-primary-rgb), 0.25);
+        transform: translateX(-50%);
+        z-index: 1;
+      }
+    }
+
+    /* ── Features Grid Section (Step 6) ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: rgba(var(--accent-primary-rgb), 0.05);
+      border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+    }
+
+    .feature-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-desc {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      flex-grow: 1;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .feature-tag {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--ink-secondary);
+    }
+
+    .feature-tag--highlight {
+      background: rgba(var(--accent-primary-rgb), 0.05);
+      border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+      color: var(--accent-primary);
+    }
+
+    /* ── Pricing Section (Step 7) ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      align-items: stretch;
+      margin-bottom: 2.5rem;
+    }
+
+    .pricing-card {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .pricing-card--highlighted {
+      border-color: var(--accent-primary) !important;
+      box-shadow: 0 0 30px rgba(var(--accent-primary-rgb), 0.12) !important;
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 768px) {
+      .pricing-card--highlighted {
+        transform: scale(1);
+      }
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -12px;
+      right: 1.5rem;
+      background: var(--accent-primary);
+      color: var(--bg-deep);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.3);
+    }
+
+    .pricing-tier-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .pricing-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .pricing-price span {
+      color: var(--accent-primary);
+    }
+
+    .pricing-sub {
+      font-size: 0.8125rem;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+      margin-bottom: 2rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem;
+      flex-grow: 1;
+    }
+
+    .pricing-features li {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .pricing-features svg {
+      color: var(--accent-primary);
+      flex-shrink: 0;
+    }
+
+    .pricing-footer-note {
+      text-align: center;
+      font-family: var(--font-mono);
+      color: var(--ink-muted);
+      font-size: 0.8125rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Consulting Section (Step 8) ── */
+    .consulting-banner {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (max-width: 992px) {
+      .consulting-banner {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    .consulting-tagline {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .consulting-tagline span {
+      background: var(--accent-primary);
+      color: var(--bg-deep);
+      padding: 0 0.5rem;
+      border-radius: 4px;
+    }
+
+    .consulting-text {
+      font-size: 1rem;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .consulting-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0 1.5rem 0 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .consulting-bullets {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .consulting-bullets li {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .consulting-bullets svg {
+      color: var(--accent-secondary);
+      flex-shrink: 0;
+    }
+
+    /* Form Styles */
+    .consulting-form-card {
+      background: rgba(17, 18, 21, 0.4);
+      border: 1px solid rgba(var(--accent-primary-rgb), 0.15);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: opacity var(--duration-base) var(--ease-out);
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Footer Styles */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 4rem 0 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    .footer-brand {
+      margin-bottom: 1rem;
+    }
+
+    .footer-desc {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      max-width: 320px;
+    }
+
+    .footer-heading {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      font-size: 0.875rem;
+      color: var(--ink-secondary);
+      text-decoration: none;
+      transition: color var(--duration-fast) var(--ease-out);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copyright {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .footer-social a {
+      color: var(--ink-muted);
+      transition: color var(--duration-fast) var(--ease-out);
+    }
+
+    .footer-social a:hover {
+      color: var(--accent-primary);
+    }
+
+    /* ── Search Input (Step 9) ── */
+    .nav-search-wrapper {
+      position: relative;
+      max-width: 150px;
+      margin-left: 0.75rem;
+    }
+    
+    .nav-search {
+      padding: 0.375rem 0.75rem 0.375rem 1.75rem !important;
+      font-size: 0.75rem !important;
+      background: rgba(11, 11, 18, 0.6) !important;
+      border: 1px solid rgba(var(--accent-primary-rgb), 0.15) !important;
+      font-family: var(--font-mono) !important;
+      border-radius: 4px !important;
+    }
+
+    .nav-search:focus {
+      border-color: var(--accent-primary) !important;
+      box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.15) !important;
+    }
+
+    .search-icon-svg {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-muted);
+      pointer-events: none;
+      width: 12px;
+      height: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-search-wrapper {
+        max-width: none;
+        margin: 0.5rem 0;
+        width: 100%;
+        order: -1; /* place search at top of mobile menu dropdown */
+      }
+      
+      .nav-search {
+        padding: 0.5rem 1rem 0.5rem 2rem !important;
+        font-size: 0.875rem !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Scroll-to-Top -->
+  <button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <div class="app-shell">
+    
+    <!-- NAVIGATION CONTAINER (Step 2) -->
+    <header>
+      <a href="#" class="nav-logo">
+        agent<span>flow</span>
+      </a>
+      
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <nav class="nav-menu" id="navMenu">
+        <a href="#hero" class="active">Product</a>
+        <a href="#why">Why AgentFlow</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#consulting">Consulting</a>
+        
+        <!-- Search Box (Step 9) -->
+        <div class="nav-search-wrapper">
+          <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="kbSearchInput" class="drift-input nav-search" placeholder="Search spec...">
+        </div>
+        
+        <a href="#early-access" class="drift-btn drift-btn--primary drift-btn--sm nav-cta-mobile" style="margin-top: 1rem; display: none;">Get Early Access</a>
+      </nav>
+
+      <div class="nav-cta">
+        <a href="#early-access" class="drift-btn drift-btn--primary drift-btn--sm">Get Early Access</a>
+      </div>
+      <button class="drift-btn drift-btn--ghost theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle theme" style="flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </header>
+    
+    <main>
+      
+      <!-- HERO CONTAINER (Step 3) -->
+      <section id="hero" class="hero-section" data-keywords="hero, tagline, email, early access, prompts, pipelines, workflows, orchestration">
+        <div class="hero-mesh"></div>
+        <div class="hero-glow"></div>
+        
+        <div class="drift-card drift-card--glass drift-hud-frame hero-hud-frame">
+          <div class="drift-hud-readout" style="margin-bottom: 1rem;">System status: ready.sys</div>
+          <h1 class="hero-tagline">Turn prompts into pipelines</h1>
+          <p class="hero-subhead">
+            The open-source orchestration layer for LLM workflows. Build agents from the ground up. Run where data lives.
+          </p>
+          
+          <form class="hero-form" id="earlyAccessForm" action="#">
+            <input type="email" placeholder="your@email.com" required class="drift-input" id="heroEmail" aria-label="Email address">
+            <button type="submit" class="drift-btn drift-btn--primary">
+              Get Early Access
+            </button>
+          </form>
+          
+          <div class="hero-subtext">
+            No credit card &middot; Ships this month
+          </div>
+        </div>
+        
+        <a href="#why" class="hero-scroll-indicator" aria-label="Scroll to next section">
+          <span>> scroll_down_</span><span class="terminal-cursor"></span>
+        </a>
+      </section>
+      
+      <!-- WHY AGENTFLOW / PROBLEM SECTION (Step 4) -->
+      <section id="why" class="reveal-on-scroll" data-keywords="why, security, vendor lock, infrastructure, stack, local, data, open source">
+        <div class="section-header">
+          <span class="section-tag">System Properties</span>
+          <h2 class="section-title">Why AgentFlow?</h2>
+          <p class="section-subtitle">
+            Most agent platforms lock you in and send your data to external servers. AgentFlow is built for complete control, absolute security, and zero vendor lock-in.
+          </p>
+        </div>
+        
+        <div class="card-grid-3">
+          <!-- Card 1: Security-First -->
+          <div class="drift-card drift-card--glass why-card">
+            <div class="drift-hud-readout" style="position: absolute; top: 1rem; right: 1rem; opacity: 0.5;">[AF-01]</div>
+            <div class="why-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <circle cx="12" cy="11" r="2"></circle>
+                <line x1="12" y1="13" x2="12" y2="17"></line>
+              </svg>
+            </div>
+            <h3 class="why-title">Security-First</h3>
+            <p class="why-desc">
+              Run where your data lives. Your pipeline runs inside your secure cloud or on-premise infrastructure. No leakage, no external processing.
+            </p>
+          </div>
+          
+          <!-- Card 2: No Vendor Lock -->
+          <div class="drift-card drift-card--glass why-card">
+            <div class="drift-hud-readout" style="position: absolute; top: 1rem; right: 1rem; opacity: 0.5;">[AF-02]</div>
+            <div class="why-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+                <line x1="10" y1="21" x2="14" y2="3"></line>
+              </svg>
+            </div>
+            <h3 class="why-title">No Vendor Lock</h3>
+            <p class="why-desc">
+              Our stack is completely open-source. Build pipelines that belong to you, without recurring fees or dependencies on proprietary platforms.
+            </p>
+          </div>
+          
+          <!-- Card 3: Your Stack -->
+          <div class="drift-card drift-card--glass why-card">
+            <div class="drift-hud-readout" style="position: absolute; top: 1rem; right: 1rem; opacity: 0.5;">[AF-03]</div>
+            <div class="why-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                <line x1="2" y1="10" x2="2" y2="14"></line>
+                <line x1="22" y1="10" x2="22" y2="14"></line>
+              </svg>
+            </div>
+            <h3 class="why-title">Your Stack</h3>
+            <p class="why-desc">
+              Bring your own infrastructure, custom tools, and models. Connect local LLMs, commercial APIs, or open models without friction.
+            </p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- HOW IT WORKS SECTION (Step 5) -->
+      <section id="how" class="reveal-on-scroll" data-keywords="how, connect, configure, deploy, flow, pipeline, architecture, setup">
+        <div class="section-header">
+          <span class="section-tag">Deployment Pipeline</span>
+          <h2 class="section-title">How It Works</h2>
+          <p class="section-subtitle">
+            Go from raw prompts to robust autonomous LLM workflows in three simple steps.
+          </p>
+        </div>
+        
+        <div class="flow-grid">
+          <!-- Step 1: Connect -->
+          <div class="flow-step">
+            <div class="flow-number-badge">01</div>
+            <h3 class="flow-title">Connect</h3>
+            <p class="flow-desc">
+              Link your local models, vector stores, API keys, and custom developer tools.
+            </p>
+          </div>
+          
+          <!-- Step 2: Configure -->
+          <div class="flow-step">
+            <div class="flow-number-badge">02</div>
+            <h3 class="flow-title">Configure</h3>
+            <p class="flow-desc">
+              Define routing rules, agent profiles, session states, and tool bindings in clean YAML.
+            </p>
+          </div>
+          
+          <!-- Step 3: Deploy -->
+          <div class="flow-step">
+            <div class="flow-number-badge">03</div>
+            <h3 class="flow-title">Deploy</h3>
+            <p class="flow-desc">
+              Spin up your agent workspace, connect it to your app, or run it headless as a CLI daemon.
+            </p>
+          </div>
+        </div>
+
+        <!-- Architecture Diagram Sub-panel -->
+        <div class="drift-card drift-card--glass arch-panel" style="margin-top: 3rem; padding: 2.5rem 2rem;">
+          <div class="drift-hud-readout" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+            <span>Architecture Specification v2.0 // Local Security Boundary</span>
+            <span class="status-badge" style="color: var(--accent-secondary);">
+              <span class="status-dot"></span> Online
+            </span>
+          </div>
+          
+          <div class="arch-svg-container">
+            <svg class="arch-svg" viewBox="0 0 800 250" width="100%" height="100%">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 2 L 10 5 L 0 8 z" fill="none" stroke="var(--accent-primary)" stroke-width="1.5"/>
+                </marker>
+                <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 2 L 10 5 L 0 8 z" fill="none" stroke="#34d399" stroke-width="1.5"/>
+                </marker>
+                <marker id="arrow-violet" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 2 L 10 5 L 0 8 z" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+                </marker>
+              </defs>
+              
+              <!-- GRID & BACKGROUND CONNECTIONS -->
+              
+              <!-- 1. Local Security Boundary Box (Security: rgba(136, 19, 55, 0.25), stroke #fb7185) -->
+              <rect x="220" y="20" width="410" height="175" rx="6" fill="rgba(136, 19, 55, 0.08)" stroke="#fb7185" stroke-dasharray="4,4" stroke-width="1.5"/>
+              <text x="235" y="40" fill="#fb7185" font-family="var(--font-mono)" font-size="10" font-weight="600" letter-spacing="0.05em">LOCAL SECURITY BOUNDARY</text>
+              
+              <!-- 2. Connection Paths (Arrows) -->
+              <!-- Frontend to Local Daemon -->
+              <path d="M 170 100 L 250 100" fill="none" stroke="var(--accent-primary)" stroke-width="1.5" marker-end="url(#arrow)"/>
+              
+              <!-- Daemon to Router -->
+              <path d="M 370 85 C 370 65, 410 65, 450 65" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+              
+              <!-- Daemon to Vector DB -->
+              <path d="M 370 115 C 370 135, 410 135, 450 135" fill="none" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-violet)"/>
+              <path d="M 450 135 C 410 135, 370 135, 370 115" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+              
+              <!-- Router to External APIs -->
+              <path d="M 570 65 C 610 65, 620 100, 680 100" fill="none" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5" marker-end="url(#arrow)"/>
+              
+              <!-- COMPONENTS -->
+              
+              <!-- Frontend / Client (rgba(8, 51, 68, 0.4), stroke #22d3ee) -->
+              <g class="arch-node" transform="translate(30, 70)">
+                <rect width="140" height="60" rx="4" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+                <text x="70" y="28" fill="var(--ink)" font-family="var(--font-sans)" font-size="12" font-weight="600" text-anchor="middle">Developer Client</text>
+                <text x="70" y="44" fill="var(--accent-primary)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">CLI / WEB UI</text>
+              </g>
+              
+              <!-- Local Daemon (Backend: rgba(6, 78, 59, 0.4), stroke #34d399) -->
+              <g class="arch-node" transform="translate(250, 70)">
+                <rect width="120" height="60" rx="4" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+                <text x="60" y="28" fill="var(--ink)" font-family="var(--font-sans)" font-size="12" font-weight="600" text-anchor="middle">Agent Daemon</text>
+                <text x="60" y="44" fill="#34d399" font-family="var(--font-mono)" font-size="9" text-anchor="middle">local runtime</text>
+              </g>
+              
+              <!-- Router (Backend: rgba(6, 78, 59, 0.4), stroke #34d399) -->
+              <g class="arch-node" transform="translate(450, 35)">
+                <rect width="120" height="50" rx="4" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+                <text x="60" y="24" fill="var(--ink)" font-family="var(--font-sans)" font-size="11" font-weight="600" text-anchor="middle">Model Router</text>
+                <text x="60" y="38" fill="#34d399" font-family="var(--font-mono)" font-size="8" text-anchor="middle">MCP support</text>
+              </g>
+              
+              <!-- Local Vector DB (Database: rgba(76, 29, 149, 0.4), stroke #a78bfa) -->
+              <g class="arch-node" transform="translate(450, 110)">
+                <rect width="120" height="50" rx="4" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+                <text x="60" y="24" fill="var(--ink)" font-family="var(--font-sans)" font-size="11" font-weight="600" text-anchor="middle">Vector Cache</text>
+                <text x="60" y="38" fill="#a78bfa" font-family="var(--font-mono)" font-size="8" text-anchor="middle">sqlite / local-first</text>
+              </g>
+              
+              <!-- External API (External: rgba(30, 41, 59, 0.5), stroke #94a3b8) -->
+              <g class="arch-node" transform="translate(680, 70)">
+                <rect width="100" height="60" rx="4" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="50" y="28" fill="var(--ink)" font-family="var(--font-sans)" font-size="12" font-weight="600" text-anchor="middle">LLM Provider</text>
+                <text x="50" y="44" fill="#94a3b8" font-family="var(--font-mono)" font-size="9" text-anchor="middle">openrouter / api</text>
+              </g>
+              
+              <!-- Legend outside boundary (lowest Y + 20px) -->
+              <g transform="translate(30, 215)">
+                <!-- Frontend -->
+                <circle cx="5" cy="5" r="4" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+                <text x="15" y="8" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="9">Frontend</text>
+                
+                <!-- Backend -->
+                <circle cx="100" cy="5" r="4" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+                <text x="110" y="8" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="9">Backend</text>
+                
+                <!-- Database -->
+                <circle cx="190" cy="5" r="4" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+                <text x="200" y="8" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="9">Database</text>
+                
+                <!-- External -->
+                <circle cx="280" cy="5" r="4" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+                <text x="290" y="8" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="9">External</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+      
+      <!-- FEATURES SECTION (Step 6) -->
+      <section id="features" class="reveal-on-scroll" data-keywords="features, grid, routing, openrouter, gemini, lm studio, tars, profiles, mcp, vector, telegram, local, offline">
+        <div class="section-header">
+          <span class="section-tag">Feature Matrix</span>
+          <h2 class="section-title">Core Capabilities</h2>
+          <p class="section-subtitle">
+            AgentFlow comes pre-loaded with powerful tools, memory modules, and multi-agent routing engines.
+          </p>
+        </div>
+        
+        <div class="features-grid">
+          <!-- Feature 1: Multi-Provider -->
+          <div class="drift-card drift-card--glass feature-card">
+            <div class="feature-header">
+              <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="16" y="16" width="6" height="6" rx="1"></rect>
+                  <rect x="2" y="16" width="6" height="6" rx="1"></rect>
+                  <rect x="9" y="2" width="6" height="6" rx="1"></rect>
+                  <path d="M12 8v8M5 16l7-8M19 16l-7-8"></path>
+                </svg>
+              </div>
+              <span class="drift-hud-readout" style="opacity: 0.6;">[FE-01]</span>
+            </div>
+            <h3 class="feature-title">Multi-Provider Routing</h3>
+            <p class="feature-desc">
+              Seamlessly route tasks to OpenRouter, Gemini, Codex, or local instances via LM Studio. Choose cost, speed, or intelligence dynamically.
+            </p>
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--highlight">OpenRouter</span>
+              <span class="feature-tag">Gemini</span>
+              <span class="feature-tag">LM Studio</span>
+            </div>
+          </div>
+          
+          <!-- Feature 2: Agent Profiles -->
+          <div class="drift-card drift-card--glass feature-card">
+            <div class="feature-header">
+              <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <span class="drift-hud-readout" style="opacity: 0.6;">[FE-02]</span>
+            </div>
+            <h3 class="feature-title">Specialized Agent Profiles</h3>
+            <p class="feature-desc">
+              Load pre-configured profiles like TARS, research assistants, or coder agents. Define personality, temperature, system constraints in YAML.
+            </p>
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--highlight">TARS</span>
+              <span class="feature-tag">Researchers</span>
+              <span class="feature-tag">Coders</span>
+            </div>
+          </div>
+          
+          <!-- Feature 3: Tool System -->
+          <div class="drift-card drift-card--glass feature-card">
+            <div class="feature-header">
+              <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+              </div>
+              <span class="drift-hud-readout" style="opacity: 0.6;">[FE-03]</span>
+            </div>
+            <h3 class="feature-title">Protocol Tool Integrations</h3>
+            <p class="feature-desc">
+              Equipped with full Model Context Protocol (MCP) support. Bind external databases, code runtimes, or custom files as execution tools.
+            </p>
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--highlight">MCP Spec</span>
+              <span class="feature-tag">Local Filesystem</span>
+            </div>
+          </div>
+          
+          <!-- Feature 4: Skills & Memory -->
+          <div class="drift-card drift-card--glass feature-card">
+            <div class="feature-header">
+              <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="4"></rect>
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <line x1="12" y1="2" x2="12" y2="9"></line>
+                  <line x1="12" y1="15" x2="12" y2="22"></line>
+                  <line x1="2" y1="12" x2="9" y2="12"></line>
+                  <line x1="15" y1="12" x2="22" y2="12"></line>
+                </svg>
+              </div>
+              <span class="drift-hud-readout" style="opacity: 0.6;">[FE-04]</span>
+            </div>
+            <h3 class="feature-title">Skills & Semantic Memory</h3>
+            <p class="feature-desc">
+              Session-aware vector caches preserve long-term context and let agents learn skills dynamically. Maintain context across multiple conversation boundaries.
+            </p>
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--highlight">Vector Cache</span>
+              <span class="feature-tag">SQLite Store</span>
+            </div>
+          </div>
+          
+          <!-- Feature 5: Telegram Native -->
+          <div class="drift-card drift-card--glass feature-card">
+            <div class="feature-header">
+              <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <span class="drift-hud-readout" style="opacity: 0.6;">[FE-05]</span>
+            </div>
+            <h3 class="feature-title">Telegram Bot Integration</h3>
+            <p class="feature-desc">
+              Run your workflows directly from Telegram. Chat with agents, trigger scheduled execution flows, and receive notifications via inline commands.
+            </p>
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--highlight">Telegram API</span>
+              <span class="feature-tag">Cron Engine</span>
+            </div>
+          </div>
+          
+          <!-- Feature 6: Local-First -->
+          <div class="drift-card drift-card--glass feature-card">
+            <div class="feature-header">
+              <div class="feature-icon-wrapper">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </div>
+              <span class="drift-hud-readout" style="opacity: 0.6;">[FE-06]</span>
+            </div>
+            <h3 class="feature-title">Local-First Isolation</h3>
+            <p class="feature-desc">
+              Keep code execution, configuration registries, and state storage completely local. Perfect for offline tasks and sensitive data projects.
+            </p>
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--highlight">Local Disk</span>
+              <span class="feature-tag">100% Offline</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- PRICING SECTION (Step 7) -->
+      <section id="pricing" class="reveal-on-scroll" data-keywords="pricing, tiers, free, premium, pro, cost, monthly, cloud, template, library, storage, workspaces">
+        <div class="section-header">
+          <span class="section-tag">Licensing Tiers</span>
+          <h2 class="section-title">Flexible Pricing Plan</h2>
+          <p class="section-subtitle">
+            Scale your agent operations with transparent, affordable plans. All options include the open-source CLI engine.
+          </p>
+        </div>
+        
+        <div class="pricing-grid">
+          <!-- Tier 1: Free -->
+          <div class="drift-card drift-card--glass pricing-card">
+            <h3 class="pricing-tier-name">Free</h3>
+            <div class="pricing-price">$0</div>
+            <div class="pricing-sub">Forever</div>
+            
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Basic MD prompt builder
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Git workflow sync
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                GitHub open-source stack
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Local-only configuration
+              </li>
+            </ul>
+            
+            <a href="#early-access" class="drift-btn drift-btn--secondary" style="width: 100%;">Get Started</a>
+          </div>
+          
+          <!-- Tier 2: Premium (Highlighted) -->
+          <div class="drift-card drift-card--glass pricing-card pricing-card--highlighted">
+            <span class="pricing-badge">Sweet Spot</span>
+            <h3 class="pricing-tier-name" style="color: var(--accent-primary);">Premium</h3>
+            <div class="pricing-price">$9.99</div>
+            <div class="pricing-sub" style="color: var(--accent-primary);">Per Month</div>
+            
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Multi-AI model routing
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Cloud storage & sync
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Saved template library
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Structured JSON outputs
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Advanced skills support
+              </li>
+            </ul>
+            
+            <a href="#early-access" class="drift-btn drift-btn--primary" style="width: 100%;">Upgrade to Premium</a>
+          </div>
+          
+          <!-- Tier 3: Pro -->
+          <div class="drift-card drift-card--glass pricing-card">
+            <h3 class="pricing-tier-name">Pro</h3>
+            <div class="pricing-price">$19.99</div>
+            <div class="pricing-sub">Per Month</div>
+            
+            <ul class="pricing-features">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Preloaded orchestration runtimes
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Priority support channels
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Custom skills authoring
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Team-wide workspaces
+              </li>
+            </ul>
+            
+            <a href="#early-access" class="drift-btn drift-btn--secondary" style="width: 100%;">Go Pro</a>
+          </div>
+        </div>
+        
+        <div class="pricing-footer-note">
+          &larr; all tiers include the open-source CLI &middot; consulting upgrades available &rarr;
+        </div>
+      </section>
+      
+      <!-- CONSULTING SECTION (Step 8) -->
+      <section id="consulting" class="reveal-on-scroll" data-keywords="consulting, enterprise, training, SLA, deployment, on-premise, talk to us, support">
+        <div class="drift-card drift-card--glass consulting-banner">
+          <div>
+            <span class="section-tag">Turn Pipelines Into Profit</span>
+            <p class="consulting-text">
+              Looking for private deployments, custom tool integrations, team training, or SLA guarantees? We shape AI to work for you. You use the free tier. We handle the hard parts. You keep the keys.
+            </p>
+            
+            <ul class="consulting-bullets">
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Custom agent workflows
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                On-premise deployment
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Engineering training
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Enterprise SLAs
+              </li>
+            </ul>
+          </div>
+          
+          <div class="consulting-form-card" id="contact-card">
+            <div class="drift-hud-readout" style="margin-bottom: 1.5rem;">[Secure Portal]</div>
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="form-name">Name</label>
+                  <input type="text" id="form-name" required class="drift-input" placeholder="Jules Vern">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="form-email">Email</label>
+                  <input type="email" id="form-email" required class="drift-input" placeholder="jules@domain.com">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="form-tier">Plan of Interest</label>
+                <select id="form-tier" class="drift-input setting-select" style="background-color: var(--surface);">
+                  <option value="Enterprise AI Consulting">Enterprise AI Consulting</option>
+                  <option value="Pro Workspace Plan">Pro Workspace Plan</option>
+                  <option value="Premium Upgrade">Premium Upgrade</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="form-details">Project Scope</label>
+                <textarea id="form-details" required class="drift-input" placeholder="Tell us about the agent workflows you want to build..."></textarea>
+              </div>
+              <button type="submit" class="drift-btn drift-btn--primary" style="width: 100%;">
+                Submit Inquiry
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+    
+    <!-- FOOTER CONTAINER (Step 8) -->
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <a href="#" class="nav-logo footer-brand">
+            agent<span>flow</span>
+          </a>
+          <p class="footer-desc">
+            The open-source orchestration layer for LLM workflows. Build agents from the ground up. Run where data lives.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-links">
+            <li><a href="#hero">Product</a></li>
+            <li><a href="#why">Why AgentFlow</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">Community</h4>
+          <ul class="footer-links">
+            <li><a href="https://github.com/agentflow-org/agentflow" target="_blank">GitHub Repository</a></li>
+            <li><a href="#consulting">Consulting Services</a></li>
+            <li><a href="mailto:consulting@agentflow.dev">consulting@agentflow.dev</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          &copy; 2026 AgentFlow. Open-source under MIT License.
+        </div>
+        <div class="footer-social">
+          <a href="https://github.com/agentflow-org/agentflow" target="_blank" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+    
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════
+    // CORE APPLICATION INTERACTIONS (Step 9)
+    // ═══════════════════════════════════════════════════════════════
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Scroll to Top visibility
+      const scrollTopBtn = document.getElementById('scrollTopBtn');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+          scrollTopBtn.classList.add('visible');
+        } else {
+          scrollTopBtn.classList.remove('visible');
+        }
+      });
+      scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Mobile menu toggle
+      const navToggle = document.getElementById('navToggle');
+      const navMenu = document.getElementById('navMenu');
+      if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+          navMenu.classList.toggle('open');
+          const isOpen = navMenu.classList.contains('open');
+          navToggle.setAttribute('aria-expanded', isOpen);
+          navToggle.innerHTML = isOpen ? `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          ` : `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          `;
+        });
+      }
+
+      // Scroll reveal via IntersectionObserver
+      const observerOptions = {
+        threshold: 0.05,
+        rootMargin: '0px 0px -50px 0px'
+      };
+      
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+      
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+        revealObserver.observe(el);
+      });
+
+      // Real-time search filter
+      const searchInput = document.getElementById('kbSearchInput');
+      const sections = document.querySelectorAll('main > section');
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const query = searchInput.value.toLowerCase().trim();
+          
+          sections.forEach(section => {
+            if (!query) {
+              section.classList.remove('section-hidden');
+              return;
+            }
+            
+            const keywords = section.getAttribute('data-keywords') || '';
+            const textContent = section.textContent.toLowerCase();
+            const matchesKeyword = keywords.toLowerCase().includes(query);
+            const matchesText = textContent.includes(query);
+            
+            if (matchesKeyword || matchesText) {
+              section.classList.remove('section-hidden');
+            } else {
+              section.classList.add('section-hidden');
+            }
+          });
+        });
+      }
+
+      // Early Access Registration simulator
+      const earlyAccessForm = document.getElementById('earlyAccessForm');
+      if (earlyAccessForm) {
+        earlyAccessForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const emailInput = document.getElementById('heroEmail');
+          const submitBtn = earlyAccessForm.querySelector('button[type="submit"]');
+          
+          if (emailInput && submitBtn) {
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registering...';
+            
+            setTimeout(() => {
+              submitBtn.textContent = 'Access Granted';
+              submitBtn.style.background = 'var(--accent-secondary)';
+              submitBtn.style.borderColor = 'var(--accent-secondary)';
+              emailInput.value = '';
+              emailInput.placeholder = 'Transmission logged successfully.';
+              emailInput.disabled = true;
+              
+              setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                submitBtn.style.background = '';
+                submitBtn.style.borderColor = '';
+                emailInput.disabled = false;
+                emailInput.placeholder = 'your@email.com';
+              }, 4000);
+            }, 1200);
+          }
+        });
+      }
+    });
+
+    // ── Theme Toggle ──
+    (function initTheme() {
+      const stored = localStorage.getItem('agentflow-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme === 'dark' ? '' : 'light');
+      const icon = document.getElementById('themeIcon');
+      if (theme === 'light' && icon) {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+      }
+      document.getElementById('themeToggle')?.addEventListener('click', () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const newTheme = isLight ? '' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('agentflow-theme', newTheme || 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) {
+          icon.innerHTML = isLight
+            ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+            : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+        }
+      });
+    })();
+
+    // Contact Form Submission Simulator (Step 8/9)
+    function handleContactSubmit(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('form-name').value;
+      const email = document.getElementById('form-email').value;
+      const tier = document.getElementById('form-tier').value;
+      const details = document.getElementById('form-details').value;
+
+      const card = document.getElementById('contact-card');
+      if (card) {
+        card.style.opacity = '0';
+        setTimeout(() => {
+          card.innerHTML = `
+            <div class="drift-hud-readout" style="margin-bottom: 1rem; color: var(--accent-secondary);">[Transmission Received]</div>
+            <h3 class="pricing-tier-name" style="color: var(--accent-secondary); margin-bottom: 1rem;">Inquiry Logged</h3>
+            <p style="font-size: 0.875rem; color: var(--ink-secondary); line-height: 1.6; margin-bottom: 1.5rem;">
+              Thank you, <strong>${name}</strong>. Our engineering team will review your project scope and contact you at <strong>${email}</strong> regarding the <strong>${tier}</strong> inquiry within 1 business day.
+            </p>
+            <div class="drift-hud-readout" style="color: rgba(var(--accent-secondary-rgb), 0.5); font-size: 0.6875rem;">SECURE CHANNEL CLOSED</div>
+          `;
+          card.style.opacity = '1';
+        }, 300);
+      }
+    }
+  </script>
+</body>
+</html>
+<!--
+## Graph Seed: Entity Relationships
+agentflow -> is_redesigned_with -> drift_design_system
+agentflow -> provides -> ai_agent_orchestration
+marketing_site -> represents -> agentflow
+
+## Retrieval Keywords
+agentflow, drift, marketing, pipelines, workflows, orchestration, open-source, pricing, consulting
+
+## Boundary Notes
+This is a static marketing website mockup and does not contain active backend orchestration software.
+-->
