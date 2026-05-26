@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgentFlow — Data Flow &amp; User Journey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep: #0B0B12;
+      --bg-base: #0c0d0f;
+      --bg-alt: #030712;
+      --panel: #111215;
+      --surface: #17181c;
+      --border-panel: rgba(255,255,255,0.05);
+      --ink: #f2f0e8;
+      --ink-secondary: #a8a6a0;
+      --ink-muted: #6b6a66;
+      --accent-primary: #22d3ee;
+      --accent-primary-rgb: 34,211,238;
+      --accent-secondary: #34d399;
+      --accent-secondary-rgb: 52,211,153;
+      --accent-tertiary: #818cf8;
+      --accent-tertiary-rgb: 129,140,248;
+      --accent-warning: #f472b6;
+      --accent-danger: #fb7185;
+      --glass-bg: rgba(17,18,21,0.75);
+      --glass-blur: 16px;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --content-max: 1200px;
+      --ease-out: cubic-bezier(0.22,1,0.36,1);
+    }
+
+    body {
+      background: var(--bg-base); color: var(--ink); font-family: var(--font-sans);
+      min-height: 100vh; padding: 2rem;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      max-width: var(--content-max); margin: 0 auto 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; background: var(--panel); border: 1px solid var(--border-panel);
+      border-radius: 12px;
+    }
+    .header h1 { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; display: flex; align-items: center; gap: 0.5rem; }
+    .header .tag { font-size: 0.65rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(var(--accent-primary-rgb),0.15); color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.08em; }
+    .header .meta { font-size: 0.78rem; color: var(--ink-muted); }
+
+    /* ─── Legend ─── */
+    .legend {
+      max-width: var(--content-max); margin: 0 auto 1.5rem;
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      padding: 0.75rem 1.25rem; background: var(--panel); border: 1px solid var(--border-panel);
+      border-radius: 10px; font-size: 0.75rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+    .legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
+
+    /* ─── Diagram Container ─── */
+    .diagram-wrap {
+      max-width: var(--content-max); margin: 0 auto 2rem;
+      background: var(--panel); border: 1px solid var(--border-panel);
+      border-radius: 12px; padding: 1.5rem; overflow-x: auto;
+    }
+    .diagram-wrap h2 {
+      font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--ink-muted); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .diagram-wrap h2::after { content: ''; flex: 1; height: 1px; background: var(--border-panel); }
+
+    .mermaid {
+      background: transparent !important;
+      text-align: center;
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      max-width: var(--content-max); margin: 0 auto; text-align: center;
+      color: var(--ink-muted); font-size: 0.72rem;
+      border-top: 1px solid var(--border-panel); padding-top: 1.5rem;
+    }
+    .footer a { color: var(--accent-primary); }
+
+    /* ─── Mermaid theme overrides ─── */
+    :root {
+      --md-bg: transparent;
+      --md-primary: #22d3ee;
+      --md-secondary: #34d399;
+      --md-tertiary: #818cf8;
+      --md-warning: #f472b6;
+      --md-danger: #fb7185;
+      --md-text: #f2f0e8;
+      --md-text-dim: #a8a6a0;
+      --md-line: rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <div style="display:flex;align-items:center;gap:0.5rem;">
+    <h1>AgentFlow <span class="tag">Data Flow &amp; User Journey</span></h1>
+  </div>
+  <div class="meta">v0.1 &middot; 2026-05-26</div>
+</div>
+
+<!-- ═══ LEGEND ═══ -->
+<div class="legend">
+  <span class="legend-item"><span class="legend-swatch" style="background:#22d3ee;"></span> Engine / Producer</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#34d399;"></span> Storage / Persistence</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#818cf8;"></span> Consumer / UI</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:#f472b6;"></span> Cloud / Future</span>
+  <span class="legend-item"><span class="legend-swatch" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);"></span> User Action</span>
+  <span class="legend-item" style="font-family:var(--font-mono);">==> Live flow</span>
+  <span class="legend-item" style="font-family:var(--font-mono);">-.-x Future flow</span>
+</div>
+
+<!-- ═══ DIAGRAM 1: DATA FLOW ═══ -->
+<div class="diagram-wrap">
+  <h2>Data Flow Architecture</h2>
+  <div class="mermaid">
+%%{init: {
+  'theme': 'dark',
+  'themeVariables': {
+    'darkMode': true,
+    'background': '#111215',
+    'primaryColor': '#1a1d24',
+    'primaryBorderColor': '#22d3ee',
+    'primaryTextColor': '#f2f0e8',
+    'secondaryColor': '#0c0d0f',
+    'secondaryBorderColor': '#34d399',
+    'secondaryTextColor': '#f2f0e8',
+    'tertiaryColor': '#111215',
+    'tertiaryBorderColor': '#818cf8',
+    'tertiaryTextColor': '#f2f0e8',
+    'lineColor': 'rgba(255,255,255,0.15)',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'fontSize': '13px',
+    'nodePadding': '12px',
+    'mainBkg': '#17181c',
+    'nodeBorder': 'rgba(255,255,255,0.08)',
+    'clusterBkg': '#0c0d0f',
+    'clusterBorder': 'rgba(255,255,255,0.06)',
+    'titleColor': '#a8a6a0',
+    'edgeLabelBackground': '#111215',
+    'nodeTextColor': '#f2f0e8'
+  }
+}}%%
+flowchart LR
+  subgraph LOCAL["⚡ LOCAL — Source of Truth"]
+    direction LR
+
+    subgraph PRODUCERS["Producers"]
+      CD["🧩 Chat Deck<br/><span style='font-size:11px;color:#a8a6a0'>dual-model conversation</span>"]
+      CX["📝 Codex CLI<br/><span style='font-size:11px;color:#a8a6a0'>heavy implementation</span>"]
+      AG["🤖 agy CLI<br/><span style='font-size:11px;color:#a8a6a0'>front-end coding</span>"]
+      HM["⚙️ Hermes Agent<br/><span style='font-size:11px;color:#a8a6a0'>TARS sessions</span>"]
+    end
+
+    subgraph ENGINE["Engine — localhost:8377"]
+      direction TB
+      API["🌐 HTTP API<br/><span style='font-size:11px;color:#a8a6a0'>stdlib ThreadingHTTPServer</span>"]
+      CNV["🔄 Contract Normalizer<br/><span style='font-size:11px;color:#a8a6a0'>api_contract_to_session()</span>"]
+      PPL["⛓️ Analysis Pipeline<br/><span style='font-size:11px;color:#a8a6a0'>scorer + hygiene + cost + loop</span>"]
+      DB[("💾 SQLite Store<br/><span style='font-size:11px;color:#a8a6a0'>sessions + messages + analysis</span>")]
+    end
+
+    subgraph CONSUMERS["Local Consumers"]
+      VS["📊 VS Code Extension<br/><span style='font-size:11px;color:#a8a6a0'>MetricsProvider webview</span>"]
+      CW["🖥️ Control Plane<br/><span style='font-size:11px;color:#a8a6a0'>engine dashboard (mockup)</span>"]
+      WB["📈 Workbench<br/><span style='font-size:11px;color:#a8a6a0'>prompt analyzer (mockup)</span>"]
+    end
+
+    CD -- "POST /v1/ingest/session" --> API
+    CX -- "file parse → ingest" --> API
+    AG -- "file parse → ingest" --> API
+    HM -- "DB parse → ingest" --> API
+    API --> CNV --> PPL --> DB
+    API -- "idempotency check" --> DB
+    VS -- "GET /v1/metrics/summary" --> API
+    CW -- "GET /v1/sessions" --> API
+    WB -- "GET /v1/metrics/summary" --> API
+  end
+
+  subgraph CLOUD["☁️ CLOUD — Dashboard Cache (future)"]
+    direction LR
+    SW["🔁 Sync Worker<br/><span style='font-size:11px;color:#a8a6a0'>CF Workers + D1</span>"]
+    WA["🌍 Web App<br/><span style='font-size:11px;color:#a8a6a0'>Vite/TS + CF Pages</span>"]
+    SW --> WA
+  end
+
+  DB -. "batched summaries" .-x SW
+
+  style LOCAL fill:#0c0d0f,stroke:rgba(34,211,238,0.2),stroke-width:1px,stroke-dasharray:6 4
+  style CLOUD fill:#0c0d0f,stroke:rgba(244,114,182,0.2),stroke-width:1px,stroke-dasharray:6 4
+  style PRODUCERS fill:#111215,stroke:rgba(255,255,255,0.04),stroke-width:1px
+  style ENGINE fill:#111215,stroke:rgba(34,211,238,0.08),stroke-width:1px
+  style CONSUMERS fill:#111215,stroke:rgba(129,140,248,0.08),stroke-width:1px
+</div>
+</div>
+
+<!-- ═══ DIAGRAM 2: USER JOURNEY ═══ -->
+<div class="diagram-wrap">
+  <h2>User Journey</h2>
+  <div class="mermaid">
+%%{init: {
+  'theme': 'dark',
+  'themeVariables': {
+    'darkMode': true,
+    'background': '#111215',
+    'primaryColor': '#1a1d24',
+    'primaryBorderColor': '#22d3ee',
+    'primaryTextColor': '#f2f0e8',
+    'secondaryColor': '#0c0d0f',
+    'secondaryBorderColor': '#34d399',
+    'secondaryTextColor': '#f2f0e8',
+    'tertiaryColor': '#111215',
+    'tertiaryBorderColor': '#818cf8',
+    'tertiaryTextColor': '#f2f0e8',
+    'lineColor': 'rgba(255,255,255,0.12)',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'fontSize': '13px',
+    'mainBkg': '#17181c',
+    'nodeBorder': 'rgba(255,255,255,0.08)',
+    'clusterBkg': '#0c0d0f',
+    'clusterBorder': 'rgba(255,255,255,0.06)',
+    'titleColor': '#a8a6a0',
+    'edgeLabelBackground': '#111215',
+    'nodeTextColor': '#f2f0e8',
+    'actorBkg': '#111215',
+    'actorBorder': '#22d3ee',
+    'actorTextColor': '#f2f0e8',
+    'signalColor': '#22d3ee',
+    'signalTextColor': '#f2f0e8',
+    'labelBoxBkgColor': '#111215',
+    'labelBoxBorderColor': '#22d3ee',
+    'labelTextColor': '#f2f0e8',
+    'loopTextColor': '#a8a6a0',
+    'noteBkgColor': '#17181c',
+    'noteBorderColor': 'rgba(255,255,255,0.08)',
+    'sequenceNumberColor': '#a8a6a0'
+  }
+}}%%
+sequenceDiagram
+  participant User as 👤 User
+  participant Site as 🌐 agentflow.dev
+  participant Deck as 🧩 Chat Deck
+  participant Engine as ⚙️ Engine :8377
+  participant CP as 🖥️ Control Plane
+  participant WB as 📊 Workbench
+
+  Note over User,Engine: DISCOVERY PHASE
+  User->>Site: Visit agentflow.dev
+  Site-->>User: Ecosystem nav (home, chat deck, workbench, control, docs)
+  User->>Site: Click "Chat Deck"
+  Site-->>User: Chat Deck landing page with CTA
+
+  Note over User,Engine: CONVERSATION PHASE
+  User->>Deck: Launch Chat Deck
+  Deck-->>User: Configure Model A & B providers
+  User->>Deck: Set turn limit, cost cap, seed prompt
+  User->>Deck: Click Start
+  Deck-->>User: Model A responds
+  Deck-->>User: Model B responds
+  loop Every turn
+    Deck->>Deck: Models converse autonomously
+    Deck-->>User: Live token count + latency shown
+    User->>Deck: Inject user message (optional)
+    Deck->>Deck: Check cost cap + turn limit
+  end
+  Deck-->>User: Session complete or stopped
+
+  Note over User,Engine: INGESTION PHASE
+  Deck->>Deck: buildEnginePayload(session)
+  Deck->>Deck: saveSession() → localStorage
+  Deck->>Engine: POST /v1/ingest/session (fire-and-forget)
+  alt Engine online
+    Engine->>Engine: api_contract_to_session()
+    Engine->>Engine: analyze_session_models()
+    Engine->>Engine: Store in SQLite
+    Engine-->>Deck: 201 Accepted
+  else Engine offline
+    Deck->>Deck: queueForEngine(localStorage)
+    Note over Deck: Retries every 30s via processEngineQueue()
+  end
+
+  Note over User,WB: ANALYSIS PHASE
+  User->>CP: Open Control Plane
+  CP->>Engine: GET /v1/health
+  CP->>Engine: GET /v1/metrics/summary
+  CP->>Engine: GET /v1/sessions?limit=20&offset=0
+  Engine-->>CP: Status, metrics, session table data
+  CP-->>User: Engine status (green), total sessions, cost burn, loop alerts
+
+  User->>WB: Open Workbench
+  WB->>Engine: GET /v1/metrics/summary
+  Engine-->>WB: Prompt quality, hygiene, cost data
+  WB-->>User: Metric cards, trend sparkline, session explorer
+  User->>WB: Paste a prompt → click Analyze
+  WB-->>User: Quality score, file ref rate, specificity, recommendations
+  User->>WB: Browse optimization feed
+  WB-->>User: "Add file references to 3 prompts", "Session exceeded 100K tokens"
+
+  Note over User,Engine: FUTURE — CLOUD SYNC
+  Engine->>Engine: Batches summaries (every 5 min / 10 sessions)
+  Engine->>SW: POST /v1/batch (future)
+  SW->>SW: Write to D1
+  User->>WA: Open cloud dashboard (future)
+  WA->>SW: GET /v1/metrics
+  SW-->>WA: Aggregated team-wide trends
+  WA-->>User: Cross-session analytics, team-wide benchmarks
+</div>
+</div>
+
+<!-- ═══ DIAGRAM 3: DEPLOYMENT BOUNDARIES ═══ -->
+<div class="diagram-wrap">
+  <h2>Deployment Boundaries &amp; Data Policies</h2>
+  <div class="mermaid">
+%%{init: {
+  'theme': 'dark',
+  'themeVariables': {
+    'darkMode': true,
+    'background': '#111215',
+    'primaryColor': '#1a1d24',
+    'primaryBorderColor': '#22d3ee',
+    'primaryTextColor': '#f2f0e8',
+    'secondaryColor': '#0c0d0f',
+    'secondaryBorderColor': '#34d399',
+    'secondaryTextColor': '#f2f0e8',
+    'tertiaryColor': '#111215',
+    'tertiaryBorderColor': '#818cf8',
+    'tertiaryTextColor': '#f2f0e8',
+    'lineColor': 'rgba(255,255,255,0.15)',
+    'fontFamily': 'Inter, system-ui, sans-serif',
+    'fontSize': '13px',
+    'mainBkg': '#17181c',
+    'nodeBorder': 'rgba(255,255,255,0.08)',
+    'clusterBkg': '#0c0d0f',
+    'clusterBorder': 'rgba(255,255,255,0.06)',
+    'titleColor': '#a8a6a0',
+    'edgeLabelBackground': '#111215',
+    'nodeTextColor': '#f2f0e8'
+  }
+}}%%
+flowchart TD
+  subgraph YOUR_MACHINE["💻 Your Machine — Raw Data Stays Here"]
+    direction TB
+    S["📁 S: Drive (NVMe)<br/><span style='font-size:11px;color:#a8a6a0'>Projects, vault, fixtures</span>"]
+    W["🪟 Windows<br/><span style='font-size:11px;color:#a8a6a0'>Codex logs, agy brain files</span>"]
+    L["🐧 WSL2 (Ubuntu)<br/><span style='font-size:11px;color:#a8a6a0'>Hermes, engine, SQLite DBs</span>"]
+    E["⚙️ Engine :8377<br/><span style='font-size:11px;color:#a8a6a0'>Python stdlib + SQLite</span>"]
+    S --> E
+    W -- "file:// access" --> E
+    L --> E
+  end
+
+  subgraph BROWSER["🌐 Browser — Local UI"]
+    D["🧩 Chat Deck<br/><span style='font-size:11px;color:#a8a6a0'>file:// or relay :8787</span>"]
+    M["🖥️ Ecosystem Mockups<br/><span style='font-size:11px;color:#a8a6a0'>agentflow.dev (local preview)</span>"]
+    D -- "POST :8377" --> E
+    M -- "GET :8377" --> E
+  end
+
+  subgraph VSCODE["📝 VS Code — Extension"]
+    V["📊 MetricsProvider<br/><span style='font-size:11px;color:#a8a6a0'>HTTP → JSON → SQLite fallback</span>"]
+    V -- "GET :8377" --> E
+  end
+
+  subgraph CLOUD_FUTURE["☁️ Cloud — Summarized Cache (future)"]
+    CF["⚡ Cloudflare Workers<br/><span style='font-size:11px;color:#a8a6a0'>sync + API</span>"]
+    D1[("🗄️ D1 Database<br/><span style='font-size:11px;color:#a8a6a0'>metric summaries only</span>")]
+    PA["📄 Cloudflare Pages<br/><span style='font-size:11px;color:#a8a6a0'>web app + site</span>"]
+    CF --> D1 --> PA
+  end
+
+  E -. "batched summaries<br/><span style='font-size:10px'>non-PII, aggregated</span>" .-> CF
+
+  style YOUR_MACHINE fill:#0c0d0f,stroke:rgba(34,211,238,0.25),stroke-width:1.5px,stroke-dasharray:6 4
+  style BROWSER fill:#111215,stroke:rgba(129,140,248,0.2),stroke-width:1px,stroke-dasharray:6 4
+  style VSCODE fill:#111215,stroke:rgba(52,211,153,0.2),stroke-width:1px,stroke-dasharray:6 4
+  style CLOUD_FUTURE fill:#0c0d0f,stroke:rgba(244,114,182,0.2),stroke-width:1px,stroke-dasharray:6 4
+</div>
+</div>
+
+<div class="footer">
+  AgentFlow &middot; Turn prompts into pipelines &middot; <a href="https://agentflow.dev" target="_blank">agentflow.dev</a>
+  &middot; <a href="roadmap.html">Ecosystem Roadmap</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    securityLevel: 'loose',
+    fontFamily: '"Inter", system-ui, sans-serif',
+  });
+</script>
+
+</body>
+</html>
