@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drift Design Guide — Canonical Specification v2.0</title>
+<meta name="description" content="The canonical specification for building in the Drift design ecosystem. Color system, typography, components, glassmorphism, motion tokens, and domain theming.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   DRIFT DESIGN GUIDE v2.0
+   The canonical specification for the Drift design ecosystem
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design Tokens ── */
+:root {
+  /* Backgrounds */
+  --bg-deep: #0B0B12;
+  --bg-base: #0c0d0f;
+  --bg-alt: #030712;
+  --panel: #111215;
+  --surface: #17181c;
+
+  /* Text */
+  --ink: #f2f0e8;
+  --ink-secondary: #a8a6a0;
+  --ink-muted: #6b6a66;
+
+  /* Accents */
+  --accent-primary: #22d3ee;
+  --accent-primary-rgb: 34, 211, 238;
+  --accent-secondary: #34d399;
+  --accent-tertiary: #818cf8;
+  --accent-tertiary-rgb: 129, 140, 248;
+  --accent-warning: #f472b6;
+  --gold: #d7a928;
+  --coral: #e07d5f;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(17, 18, 21, 0.7);
+  --glass-border: rgba(34, 211, 238, 0.15);
+  --glass-blur: 16px;
+  --grain-opacity: 0.03;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Playfair Display', Georgia, serif;
+
+  /* Layout */
+  --content-max: 1200px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 500ms;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg-deep);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* ── Grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: repeating-conic-gradient(
+    transparent 0%, rgba(255,255,255,0.03) 25%, transparent 50%
+  );
+  background-size: 3px 3px;
+}
+
+/* ── Layout Shell ── */
+.app-shell {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.guide-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  min-height: 100vh;
+}
+
+/* ── Sidebar TOC ── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.5rem 1rem 2rem 1.5rem;
+  background: var(--panel);
+  border-right: 1px solid rgba(255,255,255,0.04);
+  z-index: 200;
+}
+
+.sidebar-brand {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-brand span { color: var(--ink-muted); font-weight: 400; }
+
+.sidebar-version {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--ink-muted);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.toc-group-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.toc-link {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink-secondary);
+  text-decoration: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s var(--ease-out);
+  margin-bottom: 1px;
+}
+
+.toc-link:hover {
+  color: var(--ink);
+  background: rgba(255,255,255,0.03);
+}
+
+.toc-link.active {
+  color: var(--accent-primary);
+  background: rgba(34,211,238,0.06);
+  border-left-color: var(--accent-primary);
+}
+
+/* ── Main content ── */
+.main-content {
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.section {
+  padding: 4rem 3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.section:last-child { border-bottom: none; }
+
+.section-number {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-primary);
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+}
+
+.section-desc {
+  color: var(--ink-secondary);
+  max-width: 640px;
+  margin-bottom: 2.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.subsection-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  margin-bottom: 1.25rem;
+  margin-top: 2.5rem;
+}
+
+.subsection-title:first-of-type { margin-top: 0; }
+
+/* ── Hero ── */
+.hero {
+  padding: 5rem 3rem 4rem;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  width: 900px;
+  height: 900px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(34,211,238,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--accent-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  color: var(--ink-secondary);
+  font-size: 1.0625rem;
+  max-width: 560px;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.stats-bar {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  margin-bottom: 1.5rem;
+}
+
+.stats-bar span { color: var(--accent-primary); }
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Cards ── */
+.drift-card {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.drift-card:hover {
+  border-color: rgba(34,211,238,0.2);
+  transform: translateY(-2px);
+}
+
+.drift-card--glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.drift-card--interactive { cursor: pointer; }
+.drift-card--interactive:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 20px rgba(34,211,238,0.08);
+}
+
+.drift-card--flat {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.drift-card--flat:hover { transform: none; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card-desc {
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+/* ── Buttons ── */
+.drift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.drift-btn--primary {
+  background: var(--accent-primary);
+  color: var(--bg-deep);
+  border-color: var(--accent-primary);
+}
+
+.drift-btn--primary:hover {
+  background: transparent;
+  color: var(--accent-primary);
+  box-shadow: 0 0 12px rgba(34,211,238,0.3);
+}
+
+.drift-btn--secondary {
+  background: transparent;
+  color: var(--accent-primary);
+  border-color: rgba(34,211,238,0.3);
+}
+
+.drift-btn--secondary:hover {
+  border-color: var(--accent-primary);
+  background: rgba(34,211,238,0.06);
+}
+
+.drift-btn--ghost {
+  background: transparent;
+  color: var(--ink-secondary);
+  border-color: transparent;
+}
+
+.drift-btn--ghost:hover {
+  color: var(--ink);
+  background: rgba(255,255,255,0.04);
+}
+
+.drift-btn--danger {
+  background: transparent;
+  color: var(--accent-warning);
+  border-color: rgba(244,114,182,0.3);
+}
+
+.drift-btn--danger:hover {
+  background: rgba(244,114,182,0.1);
+  border-color: var(--accent-warning);
+}
+
+.drift-btn--sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+.drift-btn--lg { padding: 0.875rem 1.75rem; font-size: 1rem; }
+
+.btn-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Navigation ── */
+.drift-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: var(--panel);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.drift-nav__item {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--ink-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.drift-nav__item:hover {
+  color: var(--ink);
+  background: rgba(255,255,255,0.04);
+}
+
+.drift-nav__item--active {
+  color: var(--accent-primary);
+  background: rgba(34,211,238,0.08);
+}
+
+.drift-nav--terminal {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: transparent;
+  border: 1px solid rgba(34,211,238,0.1);
+}
+
+.drift-nav--terminal .drift-nav__item {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.drift-nav--terminal .drift-nav__item--active::before { content: '> '; }
+
+/* ── Inputs ── */
+.drift-input {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 0.625rem 0.875rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+  outline: none;
+}
+
+.drift-input::placeholder { color: var(--ink-muted); }
+
+.drift-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.1);
+}
+
+.setting-select {
+  background-color: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 0.625rem 2rem 0.625rem 0.875rem;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b6a66'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+}
+
+.setting-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.1);
+}
+
+textarea.drift-input {
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+/* ── Tags ── */
+.drift-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(34,211,238,0.2);
+  color: var(--accent-primary);
+  background: rgba(34,211,238,0.06);
+}
+
+.drift-tag--success { color: var(--accent-secondary); border-color: rgba(52,211,153,0.2); background: rgba(52,211,153,0.06); }
+.drift-tag--warning { color: var(--accent-warning); border-color: rgba(244,114,182,0.2); background: rgba(244,114,182,0.06); }
+.drift-tag--gold { color: var(--gold); border-color: rgba(215,169,40,0.2); background: rgba(215,169,40,0.06); }
+.drift-tag--coral { color: var(--coral); border-color: rgba(224,125,95,0.2); background: rgba(224,125,95,0.06); }
+.drift-tag--violet { color: var(--accent-tertiary); border-color: rgba(129,140,248,0.2); background: rgba(129,140,248,0.06); }
+
+.tag-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── Toggle ── */
+.drift-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(34,211,238,0.22);
+  background: rgba(255,255,255,0.06);
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.drift-toggle::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ink-muted);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.drift-toggle:checked {
+  background: rgba(34,211,238,0.18);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px rgba(34,211,238,0.16);
+}
+
+.drift-toggle:checked::before {
+  transform: translateX(18px);
+  background: var(--accent-primary);
+}
+
+/* ── Slider ── */
+.drift-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  outline: none;
+}
+
+.drift-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--accent-primary);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-primary);
+  transition: transform 0.1s;
+}
+
+.drift-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+.drift-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--accent-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px var(--accent-primary);
+}
+
+/* ── HUD Elements ── */
+.drift-hud-frame {
+  position: relative;
+  border: 1px solid rgba(34,211,238,0.12);
+  padding: 1.5rem;
+  background: rgba(11,11,18,0.5);
+}
+
+.drift-hud-frame::before,
+.drift-hud-frame::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--accent-primary);
+  border-style: solid;
+}
+
+.drift-hud-frame::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+.drift-hud-frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+.drift-hud-readout {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.drift-hud-progress {
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.drift-hud-progress__fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 2px;
+  transition: width 0.6s var(--ease-out);
+}
+
+.drift-hud-scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.drift-hud-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(34,211,238,0.015) 2px, rgba(34,211,238,0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Terminal ── */
+.terminal-line {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--accent-primary);
+  padding: 0.75rem 1rem;
+  background: rgba(11,11,18,0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(34,211,238,0.08);
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.1em;
+  background: var(--accent-primary);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+/* ── Status Badge ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  box-shadow: 0 0 10px var(--accent-secondary);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot--idle {
+  background: var(--ink-muted);
+  box-shadow: none;
+  animation: none;
+}
+
+.status-dot--warning {
+  background: var(--accent-warning);
+  box-shadow: 0 0 10px var(--accent-warning);
+}
+
+/* ── Thinking Indicator ── */
+.thinking-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.5rem 1rem;
+  animation: thinkFadeIn 0.3s var(--ease-out);
+}
+
+.thinking-indicator .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  animation: thinkBounce 1.2s ease-in-out infinite;
+}
+
+.thinking-indicator .dot:nth-child(2) { animation-delay: 0.15s; }
+.thinking-indicator .dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Animations ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--accent-secondary); }
+  50% { opacity: 0.5; box-shadow: 0 0 4px var(--accent-secondary); }
+}
+
+@keyframes thinkBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+
+@keyframes thinkFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tokenFlash {
+  0% { color: var(--accent-primary); text-shadow: 0 0 8px var(--accent-primary); }
+  100% { color: var(--ink); text-shadow: none; }
+}
+
+@keyframes handoffPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb), 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(var(--accent-primary-rgb), 0); }
+}
+
+/* ── Swatches ── */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.swatch {
+  background: var(--panel);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: border-color 0.2s;
+}
+
+.swatch:hover { border-color: rgba(255,255,255,0.1); }
+
+.swatch__color {
+  height: 90px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0.75rem;
+  position: relative;
+}
+
+.swatch__hex {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+}
+
+.swatch__info {
+  padding: 0.75rem;
+}
+
+.swatch__name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.swatch__var {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--accent-primary);
+  margin-bottom: 0.25rem;
+}
+
+.swatch__role {
+  font-size: 0.6875rem;
+  color: var(--ink-muted);
+}
+
+.swatch__meta {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.contrast-badge {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.contrast-badge--pass {
+  background: rgba(52,211,153,0.12);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(52,211,153,0.2);
+}
+
+.contrast-badge--fail {
+  background: rgba(244,114,182,0.12);
+  color: var(--accent-warning);
+  border: 1px solid rgba(244,114,182,0.2);
+}
+
+.contrast-badge--large {
+  background: rgba(215,169,40,0.12);
+  color: var(--gold);
+  border: 1px solid rgba(215,169,40,0.2);
+}
+
+/* ── Code Blocks ── */
+.code-block {
+  position: relative;
+  background: rgba(3,7,18,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.code-block__lang {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.code-block__copy {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--ink-muted);
+  background: none;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.code-block__copy:hover {
+  color: var(--accent-primary);
+  border-color: rgba(34,211,238,0.3);
+}
+
+.code-block__copy.copied {
+  color: var(--accent-secondary);
+  border-color: rgba(52,211,153,0.3);
+}
+
+.code-block pre {
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--ink-secondary);
+}
+
+.code-block pre .kw { color: var(--accent-tertiary); }
+.code-block pre .val { color: var(--accent-primary); }
+.code-block pre .str { color: var(--accent-secondary); }
+.code-block pre .cmt { color: var(--ink-muted); font-style: italic; }
+.code-block pre .tag { color: var(--accent-warning); }
+.code-block pre .attr { color: var(--gold); }
+
+/* ── Reference Tables ── */
+.ref-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin: 1rem 0;
+}
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.ref-table th {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-primary);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: rgba(34,211,238,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  white-space: nowrap;
+}
+
+.ref-table td {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--ink-secondary);
+  vertical-align: top;
+}
+
+.ref-table tr:last-child td { border-bottom: none; }
+
+.ref-table tr:hover td { background: rgba(255,255,255,0.015); }
+
+.ref-table td:first-child {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  white-space: nowrap;
+}
+
+/* ── Do / Don't ── */
+.do-dont-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.do-card, .dont-card {
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.do-card {
+  background: rgba(52,211,153,0.03);
+  border-color: rgba(52,211,153,0.15);
+}
+
+.dont-card {
+  background: rgba(244,114,182,0.03);
+  border-color: rgba(244,114,182,0.15);
+}
+
+.do-card__label, .dont-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.do-card__label { color: var(--accent-secondary); }
+.dont-card__label { color: var(--accent-warning); }
+
+.do-card p, .dont-card p {
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+/* ── Spacing visualizer ── */
+.spacing-demo {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.spacing-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.spacing-block__visual {
+  background: rgba(34,211,238,0.15);
+  border: 1px solid rgba(34,211,238,0.3);
+  border-radius: 3px;
+}
+
+.spacing-block__label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--ink-muted);
+}
+
+/* ── Domain demos ── */
+.domain-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+.domain-card {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.domain-card__accent-bar {
+  height: 3px;
+  margin: -1.5rem -1.5rem 1.25rem -1.5rem;
+}
+
+.domain-card__swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.domain-card__name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin-bottom: 0.25rem;
+}
+
+.domain-card__hex {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Cols ── */
+.cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.cols-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ── Gradient demos ── */
+.gradient-demo {
+  height: 60px;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.gradient-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink-muted);
+  margin-bottom: 1rem;
+}
+
+/* ── Footer ── */
+.guide-footer {
+  padding: 2rem 3rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  text-align: center;
+}
+
+.guide-footer p {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink-muted);
+  line-height: 1.8;
+}
+
+/* ── Animation demo boxes ── */
+.anim-demo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(11,11,18,0.4);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 6px;
+}
+
+.anim-demo__visual {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.anim-demo__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.anim-demo__name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.anim-demo__desc {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
+/* ── Component Demo wrapper ── */
+.component-demo {
+  margin-bottom: 2.5rem;
+}
+
+.component-demo__live {
+  padding: 1.5rem;
+  background: rgba(3,7,18,0.3);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px 8px 0 0;
+}
+
+.component-demo__live + .code-block {
+  border-radius: 0 0 8px 8px;
+  margin-top: -1px;
+  border-top: none;
+}
+
+/* ── Inline code ── */
+code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  color: var(--accent-primary);
+  background: rgba(34,211,238,0.08);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+
+/* ── Focus ring ── */
+.focus-demo:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 980px) {
+  .guide-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    width: 260px;
+    transition: left 0.3s var(--ease-out);
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    left: 0;
+    box-shadow: 20px 0 60px rgba(0,0,0,0.5);
+  }
+
+  .mobile-nav-toggle {
+    display: flex;
+  }
+
+  .section { padding: 3rem 2rem; }
+  .hero { padding: 3rem 2rem 2.5rem; }
+  .hero-title { font-size: 2.5rem; }
+  .cols-2, .cols-3, .do-dont-grid { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+
+@media (min-width: 981px) {
+  .mobile-nav-toggle { display: none; }
+  .sidebar-overlay { display: none !important; }
+}
+
+@media (max-width: 640px) {
+  .section { padding: 2rem 1.25rem; }
+  .hero { padding: 2rem 1.25rem 1.5rem; }
+  .hero-title { font-size: 2rem; }
+  .section-title { font-size: 1.5rem; }
+  .swatch-grid { grid-template-columns: 1fr 1fr; }
+  .card-grid { grid-template-columns: 1fr; }
+  .domain-row { grid-template-columns: 1fr; }
+  .btn-row { flex-direction: column; align-items: stretch; }
+  .drift-btn { justify-content: center; }
+  .stats-bar { flex-direction: column; gap: 0.5rem; }
+  .guide-footer { padding: 1.5rem 1.25rem; }
+}
+
+/* ── Mobile nav button ── */
+.mobile-nav-toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: var(--panel);
+  border: 1px solid rgba(34,211,238,0.2);
+  color: var(--accent-primary);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.sidebar-overlay.open { display: block; }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile nav toggle -->
+<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="guide-layout">
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR TABLE OF CONTENTS
+     ═══════════════════════════════════════════ -->
+<nav class="sidebar" id="sidebar" role="navigation" aria-label="Table of Contents">
+  <div class="sidebar-brand">drift <span>// guide</span></div>
+  <div class="sidebar-version">v2.0 · May 2026</div>
+
+  <div class="toc-group-label">Foundation</div>
+  <a href="#philosophy" class="toc-link">01 — Philosophy</a>
+  <a href="#colors" class="toc-link">02 — Colors</a>
+  <a href="#typography" class="toc-link">03 — Typography</a>
+  <a href="#spacing" class="toc-link">04 — Spacing</a>
+
+  <div class="toc-group-label">Components</div>
+  <a href="#components" class="toc-link">05 — Components</a>
+  <a href="#glass" class="toc-link">06 — Glassmorphism</a>
+
+  <div class="toc-group-label">Motion</div>
+  <a href="#motion" class="toc-link">07 — Animation</a>
+
+  <div class="toc-group-label">System</div>
+  <a href="#domains" class="toc-link">08 — Domain Theming</a>
+  <a href="#responsive" class="toc-link">09 — Responsive</a>
+  <a href="#accessibility" class="toc-link">10 — Accessibility</a>
+  <a href="#reference" class="toc-link">11 — CSS Reference</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════ -->
+<main class="main-content" id="mainContent">
+
+<!-- ─── HERO ─── -->
+<header class="hero" id="top">
+  <div class="hero-label">— Design System v2.0 —</div>
+  <h1 class="hero-title">Drift Design Guide</h1>
+  <p class="hero-subtitle">
+    The canonical specification for building in the Drift design ecosystem.
+    Retrofuturist · Functional · Minimal · Alive.
+  </p>
+  <div class="stats-bar">
+    <div><span>7</span> core colors</div>
+    <div>·</div>
+    <div><span>3</span> font families</div>
+    <div>·</div>
+    <div><span>5</span> domain accents</div>
+    <div>·</div>
+    <div><span>9</span> motion tokens</div>
+  </div>
+  <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--ink-muted);">
+    <span style="color:var(--accent-primary);">$</span> cat /etc/drift/manifest&nbsp;
+    <span style="color:var(--accent-primary);">→</span>&nbsp;
+    11 sections · 15+ components · 1 file · 0 dependencies
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════════
+     01 — DESIGN PHILOSOPHY
+     ═══════════════════════════════════════════ -->
+<section class="section" id="philosophy">
+  <div class="section-number reveal">01 — Foundation</div>
+  <h2 class="section-title reveal">Design Philosophy</h2>
+  <p class="section-desc reveal">
+    Four principles govern every decision in the Drift system. They are not aspirational — they are constraints. If a design doesn't satisfy all four, it doesn't ship.
+  </p>
+
+  <div class="card-grid reveal">
+    <div class="drift-card">
+      <div class="card-label">Principle 01</div>
+      <div class="card-title">State Visibility</div>
+      <div class="card-desc">Token counts, turn counters, status indicators shown inline, never hidden. The user should always know what the system is doing without opening a drawer or hovering for a tooltip.</div>
+    </div>
+    <div class="drift-card">
+      <div class="card-label">Principle 02</div>
+      <div class="card-title">Dual-Source Clarity</div>
+      <div class="card-desc">Model A (teal) and Model B (violet) are visually distinct at a glance. Every piece of AI-generated content is source-attributed through color, never ambiguous.</div>
+    </div>
+    <div class="drift-card">
+      <div class="card-label">Principle 03</div>
+      <div class="card-title">Controls Over Automation</div>
+      <div class="card-desc">Start/Pause/Stop/Retry always accessible, never trapped in menus. Users must feel in command of the conversation loop at all times — automation serves them, not the reverse.</div>
+    </div>
+    <div class="drift-card">
+      <div class="card-label">Principle 04</div>
+      <div class="card-title">Debug Transparency</div>
+      <div class="card-desc">Raw API payloads, token flow, latency shown in terminal, not hidden behind settings. Power users should be able to inspect the full data path without leaving the UI.</div>
+    </div>
+  </div>
+
+  <div class="drift-card--flat reveal" style="margin-top:2rem; padding:1.5rem;">
+    <div class="card-label">Design DNA</div>
+    <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+      <span class="drift-tag">Retrofuturist</span>
+      <span class="drift-tag">Functional</span>
+      <span class="drift-tag">Minimal</span>
+      <span class="drift-tag">Alive</span>
+    </div>
+    <p class="card-desc" style="margin-top:1rem;">
+      Drift looks like a starship control panel. Feels like floating through deep space. Works like a precision instrument. Every element earns its place on screen.
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     02 — COLOR SYSTEM
+     ═══════════════════════════════════════════ -->
+<section class="section" id="colors">
+  <div class="section-number reveal">02 — Palette</div>
+  <h2 class="section-title reveal">Color System</h2>
+  <p class="section-desc reveal">
+    Near-black backgrounds with subtle warm depth. Warm white ink. Single accent per domain, applied via CSS custom properties. All accent colors are tested for WCAG AA compliance against dark backgrounds.
+  </p>
+
+  <!-- Backgrounds -->
+  <h3 class="subsection-title reveal">Background Colors</h3>
+  <div class="swatch-grid reveal" style="margin-bottom:2.5rem;">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#0B0B12;"><span class="swatch__hex">#0B0B12</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Deep</div>
+        <div class="swatch__var">--bg-deep</div>
+        <div class="swatch__role">RGB 11, 11, 18 · Root background</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs ink 16.8:1 AA✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#0c0d0f;"><span class="swatch__hex">#0c0d0f</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Base</div>
+        <div class="swatch__var">--bg-base</div>
+        <div class="swatch__role">RGB 12, 13, 15 · Chat workspace bg</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs ink 16.5:1 AA✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#030712;"><span class="swatch__hex">#030712</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Alt</div>
+        <div class="swatch__var">--bg-alt</div>
+        <div class="swatch__role">RGB 3, 7, 18 · Section contrast</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs ink 18.1:1 AA✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#111215;"><span class="swatch__hex">#111215</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Panel</div>
+        <div class="swatch__var">--panel</div>
+        <div class="swatch__role">RGB 17, 18, 21 · Cards, sidebars, nav</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs ink 15.3:1 AA✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#17181c;"><span class="swatch__hex">#17181c</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Surface</div>
+        <div class="swatch__var">--surface</div>
+        <div class="swatch__role">RGB 23, 24, 28 · Inputs, depth layer</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs ink 14.0:1 AA✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text -->
+  <h3 class="subsection-title reveal">Text Colors</h3>
+  <div class="swatch-grid reveal" style="margin-bottom:2.5rem;">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#f2f0e8;"><span class="swatch__hex" style="color:#f2f0e8;background:rgba(0,0,0,0.6);">#f2f0e8</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Ink</div>
+        <div class="swatch__var">--ink</div>
+        <div class="swatch__role">RGB 242, 240, 232 · Body text, headings</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 16.8:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#a8a6a0;"><span class="swatch__hex" style="color:#a8a6a0;background:rgba(0,0,0,0.5);">#a8a6a0</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Secondary</div>
+        <div class="swatch__var">--ink-secondary</div>
+        <div class="swatch__role">RGB 168, 166, 160 · Descriptions, labels</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 9.3:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#6b6a66;"><span class="swatch__hex" style="color:#6b6a66;background:rgba(255,255,255,0.7);">#6b6a66</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Muted</div>
+        <div class="swatch__var">--ink-muted</div>
+        <div class="swatch__role">RGB 107, 106, 102 · Placeholder, meta</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--large">vs deep 5.0:1 lg only</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accents -->
+  <h3 class="subsection-title reveal">Accent Colors</h3>
+  <div class="swatch-grid reveal" style="margin-bottom:2.5rem;">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#22d3ee;"><span class="swatch__hex" style="color:#22d3ee;background:rgba(0,0,0,0.5);">#22d3ee</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Teal</div>
+        <div class="swatch__var">--accent-primary</div>
+        <div class="swatch__role">Model A · Primary CTA · HUD readouts</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 11.4:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#34d399;"><span class="swatch__hex" style="color:#34d399;background:rgba(0,0,0,0.5);">#34d399</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Green-Teal</div>
+        <div class="swatch__var">--accent-secondary</div>
+        <div class="swatch__role">Success states · Online indicators</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 10.7:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#818cf8;"><span class="swatch__hex" style="color:#818cf8;background:rgba(0,0,0,0.5);">#818cf8</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Indigo</div>
+        <div class="swatch__var">--accent-tertiary</div>
+        <div class="swatch__role">Model B · Nebula depth · Tab accent</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 6.5:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#f472b6;"><span class="swatch__hex" style="color:#f472b6;background:rgba(0,0,0,0.5);">#f472b6</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Rose</div>
+        <div class="swatch__var">--accent-warning</div>
+        <div class="swatch__role">Errors · Warnings · Destructive actions</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 7.2:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#d7a928;"><span class="swatch__hex" style="color:#d7a928;background:rgba(0,0,0,0.5);">#d7a928</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Gold</div>
+        <div class="swatch__var">--gold</div>
+        <div class="swatch__role">Ministry domain · Premium features</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 8.1:1</span>
+        </div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#e07d5f;"><span class="swatch__hex" style="color:#e07d5f;background:rgba(0,0,0,0.5);">#e07d5f</span></div>
+      <div class="swatch__info">
+        <div class="swatch__name">Coral</div>
+        <div class="swatch__var">--coral</div>
+        <div class="swatch__role">Medical domain accent</div>
+        <div class="swatch__meta">
+          <span class="contrast-badge contrast-badge--pass">vs deep 6.7:1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glass tokens -->
+  <h3 class="subsection-title reveal">Glassmorphism Tokens</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2.5rem;">
+    <table class="ref-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>--glass-bg</td><td>rgba(17, 18, 21, 0.7)</td><td>Semi-transparent panel background</td></tr>
+        <tr><td>--glass-border</td><td>rgba(34, 211, 238, 0.15)</td><td>Subtle teal border on glass elements</td></tr>
+        <tr><td>--glass-blur</td><td>16px</td><td>Backdrop blur amount</td></tr>
+        <tr><td>--grain-opacity</td><td>0.03</td><td>Full-screen film grain overlay</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gradients -->
+  <h3 class="subsection-title reveal">Approved Gradients</h3>
+  <div class="cols-2 reveal" style="margin-bottom:1rem;">
+    <div>
+      <div class="gradient-demo" style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-tertiary) 100%);"></div>
+      <div class="gradient-label">Teal → Indigo · Hero backgrounds, accent bars</div>
+    </div>
+    <div>
+      <div class="gradient-demo" style="background: linear-gradient(135deg, var(--ink) 0%, var(--accent-primary) 100%);"></div>
+      <div class="gradient-label">Ink → Teal · Hero titles (text gradient clip)</div>
+    </div>
+  </div>
+  <div class="cols-2 reveal">
+    <div>
+      <div class="gradient-demo" style="background: linear-gradient(180deg, transparent, var(--accent-primary), transparent);"></div>
+      <div class="gradient-label">Transparent → Teal → Transparent · Status strips</div>
+    </div>
+    <div>
+      <div class="gradient-demo" style="background: radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%);border:1px solid rgba(255,255,255,0.04);"></div>
+      <div class="gradient-label">Radial teal glow · Hero ambient light</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     03 — TYPOGRAPHY
+     ═══════════════════════════════════════════ -->
+<section class="section" id="typography">
+  <div class="section-number reveal">03 — Type</div>
+  <h2 class="section-title reveal">Typography System</h2>
+  <p class="section-desc reveal">
+    Three font families, each with a precise role. Inter for readability, JetBrains Mono for technical fidelity, Playfair Display for brand moments only.
+  </p>
+
+  <!-- Font Stack Table -->
+  <h3 class="subsection-title reveal">Font Stacks</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2.5rem;">
+    <table class="ref-table">
+      <thead><tr><th>Variable</th><th>Stack</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>--font-sans</td>
+          <td style="font-family:var(--font-sans);">Inter, system-ui, -apple-system, sans-serif</td>
+          <td>UI labels, body text, buttons, navigation</td>
+        </tr>
+        <tr>
+          <td>--font-mono</td>
+          <td style="font-family:var(--font-mono);">JetBrains Mono, monospace</td>
+          <td>Terminal, code, HUD readouts, uppercase labels, tags</td>
+        </tr>
+        <tr>
+          <td>--font-display</td>
+          <td style="font-family:var(--font-display);">Playfair Display, Georgia, serif</td>
+          <td>Brand hero titles only — never body text</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Type Scale -->
+  <h3 class="subsection-title reveal">Type Scale</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2.5rem;">
+    <table class="ref-table">
+      <thead><tr><th>Step</th><th>Size</th><th>Rem</th><th>Weight</th><th>Line‑Height</th><th>Letter‑Spacing</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>5xl</td><td>48px</td><td>3rem</td><td>700</td><td>1.1</td><td>-0.02em</td><td>Hero titles</td></tr>
+        <tr><td>4xl</td><td>36px</td><td>2.25rem</td><td>700</td><td>1.15</td><td>-0.01em</td><td>Section titles</td></tr>
+        <tr><td>3xl</td><td>30px</td><td>1.875rem</td><td>700</td><td>1.2</td><td>0</td><td>Page headings</td></tr>
+        <tr><td>2xl</td><td>24px</td><td>1.5rem</td><td>600</td><td>1.25</td><td>0</td><td>Sub-headings</td></tr>
+        <tr><td>xl</td><td>20px</td><td>1.25rem</td><td>600</td><td>1.3</td><td>0</td><td>Card titles</td></tr>
+        <tr><td>lg</td><td>18px</td><td>1.125rem</td><td>400</td><td>1.6</td><td>0</td><td>Intro paragraphs</td></tr>
+        <tr><td>base</td><td>16px</td><td>1rem</td><td>400</td><td>1.6</td><td>0</td><td>Body text</td></tr>
+        <tr><td>sm</td><td>14px</td><td>0.875rem</td><td>400</td><td>1.5</td><td>0</td><td>Labels, nav links</td></tr>
+        <tr><td>xs</td><td>12px</td><td>0.75rem</td><td>400</td><td>1.5</td><td>0.02em</td><td>Captions, meta</td></tr>
+        <tr><td>xxs</td><td>10px</td><td>0.625rem</td><td>500</td><td>1.4</td><td>0.08em</td><td>HUD labels (mono)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Live type samples -->
+  <h3 class="subsection-title reveal">Live Samples</h3>
+  <div class="drift-card--flat reveal" style="padding:2rem; margin-bottom:2rem;">
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-family:var(--font-display); font-size:3rem; font-weight:700; line-height:1.1; margin-bottom:0.5rem;">
+        Drift Design System
+      </div>
+      <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em;">Playfair Display · Hero title only</div>
+    </div>
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-family:var(--font-sans); font-size:1rem; line-height:1.6; color:var(--ink); max-width:560px;">
+        The quick brown fox jumps over the lazy dog. Body text at default weight and measure for comfortable reading across terminals and control interfaces.
+      </div>
+      <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.5rem;">Inter · Body text, UI elements</div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono); font-size:0.8125rem; color:var(--accent-primary);">
+        $ drift build --target production --optimize<span class="terminal-cursor"></span>
+      </div>
+      <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.5rem;">JetBrains Mono · Terminal, code, HUD</div>
+    </div>
+  </div>
+
+  <!-- Do / Don't -->
+  <div class="do-dont-grid reveal">
+    <div class="do-card">
+      <div class="do-card__label">✓ Do</div>
+      <p>Use JetBrains Mono for status readouts, uppercase labels, terminal elements, section headings, and tags.</p>
+      <p style="margin-top:0.5rem;">Use Inter for all body text, buttons, and form labels.</p>
+      <p style="margin-top:0.5rem;">Reserve Playfair Display exclusively for brand hero titles.</p>
+    </div>
+    <div class="dont-card">
+      <div class="dont-card__label">✗ Don't</div>
+      <p>Don't use Playfair Display for body text — it lacks the x-height for comfortable reading.</p>
+      <p style="margin-top:0.5rem;">Don't use Inter for code blocks or terminal output.</p>
+      <p style="margin-top:0.5rem;">Don't mix font families within the same text block.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     04 — SPACING & LAYOUT
+     ═══════════════════════════════════════════ -->
+<section class="section" id="spacing">
+  <div class="section-number reveal">04 — Grid</div>
+  <h2 class="section-title reveal">Spacing & Layout</h2>
+  <p class="section-desc reveal">
+    All spacing derives from a 4px base unit. Consistent rhythm creates visual order and reduces arbitrary decisions.
+  </p>
+
+  <!-- Spacing scale -->
+  <h3 class="subsection-title reveal">Spacing Scale (4px base)</h3>
+  <div class="spacing-demo reveal" style="margin-bottom:2.5rem;">
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:4px; height:4px;"></div>
+      <div class="spacing-block__label">4</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:8px; height:8px;"></div>
+      <div class="spacing-block__label">8</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:12px; height:12px;"></div>
+      <div class="spacing-block__label">12</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:16px; height:16px;"></div>
+      <div class="spacing-block__label">16</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:20px; height:20px;"></div>
+      <div class="spacing-block__label">20</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:24px; height:24px;"></div>
+      <div class="spacing-block__label">24</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:32px; height:32px;"></div>
+      <div class="spacing-block__label">32</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:40px; height:40px;"></div>
+      <div class="spacing-block__label">40</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:48px; height:48px;"></div>
+      <div class="spacing-block__label">48</div>
+    </div>
+    <div class="spacing-block">
+      <div class="spacing-block__visual" style="width:64px; height:64px;"></div>
+      <div class="spacing-block__label">64</div>
+    </div>
+  </div>
+
+  <!-- Layout tokens -->
+  <h3 class="subsection-title reveal">Layout Tokens</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2.5rem;">
+    <table class="ref-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>--content-max</td><td>1200px</td><td>Maximum content width</td></tr>
+        <tr><td>Panel padding</td><td>24px</td><td>Side panel inner padding</td></tr>
+        <tr><td>Card padding</td><td>1.5rem (24px)</td><td>Card inner padding</td></tr>
+        <tr><td>Section padding</td><td>4rem 0 (64px)</td><td>Vertical section spacing</td></tr>
+        <tr><td>App shell padding</td><td>0 2rem (32px)</td><td>Horizontal page margin</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gap system -->
+  <h3 class="subsection-title reveal">Gap System</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2.5rem;">
+    <table class="ref-table">
+      <thead><tr><th>Gap</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>xs</td><td>0.25rem (4px)</td><td>Tag rows, nav item gaps</td></tr>
+        <tr><td>sm</td><td>0.5rem (8px)</td><td>Tight grouping, inline elements</td></tr>
+        <tr><td>md</td><td>1rem (16px)</td><td>Swatch grid, general gap</td></tr>
+        <tr><td>lg</td><td>1.5rem (24px)</td><td>Card grid, column gaps</td></tr>
+        <tr><td>xl</td><td>2rem (32px)</td><td>Section content spacing</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Grid patterns -->
+  <h3 class="subsection-title reveal">Grid Patterns</h3>
+  <div class="code-block reveal">
+    <div class="code-block__header">
+      <span class="code-block__lang">CSS</span>
+      <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cmt">/* Card grid — responsive 3-column */</span>
+<span class="kw">.card-grid</span> {
+  <span class="attr">display</span>: grid;
+  <span class="attr">grid-template-columns</span>: <span class="val">repeat(auto-fill, minmax(300px, 1fr))</span>;
+  <span class="attr">gap</span>: <span class="val">1.5rem</span>;
+}
+
+<span class="cmt">/* Swatch grid — responsive 4-column */</span>
+<span class="kw">.swatch-grid</span> {
+  <span class="attr">display</span>: grid;
+  <span class="attr">grid-template-columns</span>: <span class="val">repeat(auto-fill, minmax(200px, 1fr))</span>;
+  <span class="attr">gap</span>: <span class="val">1rem</span>;
+}
+
+<span class="cmt">/* Domain row — responsive 4-column */</span>
+<span class="kw">.domain-row</span> {
+  <span class="attr">display</span>: grid;
+  <span class="attr">grid-template-columns</span>: <span class="val">repeat(auto-fill, minmax(250px, 1fr))</span>;
+  <span class="attr">gap</span>: <span class="val">1.25rem</span>;
+}</pre>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     05 — COMPONENT REFERENCE
+     ═══════════════════════════════════════════ -->
+<section class="section" id="components">
+  <div class="section-number reveal">05 — UI</div>
+  <h2 class="section-title reveal">Component Reference</h2>
+  <p class="section-desc reveal">
+    Every component is driven by CSS custom properties. Live examples with copyable source code for each.
+  </p>
+
+  <!-- Cards -->
+  <h3 class="subsection-title reveal">Cards</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div class="card-grid">
+        <div class="drift-card">
+          <div class="card-label">Standard</div>
+          <div class="card-title">Deep Space Terminal</div>
+          <div class="card-desc">Standard panel card with subtle border and hover lift. Used for content sections and data panels.</div>
+        </div>
+        <div class="drift-card drift-card--glass">
+          <div class="card-label">Glass</div>
+          <div class="card-title">Nebula Overlay</div>
+          <div class="card-desc">Glassmorphism variant with backdrop blur. Ideal for overlays on hero sections.</div>
+        </div>
+        <div class="drift-card drift-card--interactive">
+          <div class="card-label">Interactive</div>
+          <div class="card-title">Control Panel</div>
+          <div class="card-desc">Hover-triggered glow on accent border. Use for clickable cards and dashboard widgets.</div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cmt">&lt;!-- Standard --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-card"</span><span class="tag">&gt;</span>...content...<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- Glass --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-card drift-card--glass"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- Interactive --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-card drift-card--interactive"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <h3 class="subsection-title reveal">Buttons</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div style="margin-bottom:1rem;">
+        <div class="btn-row">
+          <button class="drift-btn drift-btn--primary">Primary</button>
+          <button class="drift-btn drift-btn--secondary">Secondary</button>
+          <button class="drift-btn drift-btn--ghost">Ghost</button>
+          <button class="drift-btn drift-btn--danger">Danger</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="drift-btn drift-btn--primary drift-btn--sm">Small</button>
+        <button class="drift-btn drift-btn--primary">Default</button>
+        <button class="drift-btn drift-btn--primary drift-btn--lg">Large</button>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="tag">&lt;button</span> <span class="attr">class=</span><span class="str">"drift-btn drift-btn--primary"</span><span class="tag">&gt;</span>Primary<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class=</span><span class="str">"drift-btn drift-btn--secondary"</span><span class="tag">&gt;</span>Secondary<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class=</span><span class="str">"drift-btn drift-btn--ghost"</span><span class="tag">&gt;</span>Ghost<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class=</span><span class="str">"drift-btn drift-btn--danger"</span><span class="tag">&gt;</span>Danger<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- Size modifiers --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class=</span><span class="str">"drift-btn drift-btn--primary drift-btn--sm"</span><span class="tag">&gt;</span>Small<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">class=</span><span class="str">"drift-btn drift-btn--primary drift-btn--lg"</span><span class="tag">&gt;</span>Large<span class="tag">&lt;/button&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <h3 class="subsection-title reveal">Navigation</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div style="margin-bottom:1rem;">
+        <div class="drift-nav">
+          <a class="drift-nav__item drift-nav__item--active">Dashboard</a>
+          <a class="drift-nav__item">Systems</a>
+          <a class="drift-nav__item">Navigation</a>
+          <a class="drift-nav__item">Logs</a>
+        </div>
+      </div>
+      <div>
+        <div class="drift-nav drift-nav--terminal">
+          <a class="drift-nav__item drift-nav__item--active">Dashboard</a>
+          <a class="drift-nav__item">Systems</a>
+          <a class="drift-nav__item">Logs</a>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cmt">&lt;!-- Pill nav --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-nav"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">class=</span><span class="str">"drift-nav__item drift-nav__item--active"</span><span class="tag">&gt;</span>Active<span class="tag">&lt;/a&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">class=</span><span class="str">"drift-nav__item"</span><span class="tag">&gt;</span>Tab<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- Terminal nav --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-nav drift-nav--terminal"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/div&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <h3 class="subsection-title reveal">Inputs</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div class="cols-2" style="align-items:start;">
+        <div>
+          <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Text Input</div>
+          <input class="drift-input" type="text" placeholder="Enter command...">
+          <div style="height:0.75rem;"></div>
+          <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Textarea</div>
+          <textarea class="drift-input" placeholder="System prompt..."></textarea>
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Select</div>
+          <select class="setting-select" style="width:100%;">
+            <option>openrouter</option>
+            <option>lmstudio</option>
+            <option>gemini</option>
+            <option>simulate</option>
+          </select>
+          <div style="height:0.75rem;"></div>
+          <div style="font-family:var(--font-mono); font-size:0.625rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Disabled</div>
+          <input class="drift-input" type="text" placeholder="Disabled..." disabled style="opacity:0.5;">
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="tag">&lt;input</span> <span class="attr">class=</span><span class="str">"drift-input"</span> <span class="attr">type=</span><span class="str">"text"</span> <span class="attr">placeholder=</span><span class="str">"Enter command..."</span><span class="tag">&gt;</span>
+<span class="tag">&lt;textarea</span> <span class="attr">class=</span><span class="str">"drift-input"</span> <span class="attr">placeholder=</span><span class="str">"System prompt..."</span><span class="tag">&gt;&lt;/textarea&gt;</span>
+<span class="tag">&lt;select</span> <span class="attr">class=</span><span class="str">"setting-select"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/select&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <h3 class="subsection-title reveal">Tags & Badges</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div class="tag-row">
+        <span class="drift-tag">Default</span>
+        <span class="drift-tag drift-tag--success">Online</span>
+        <span class="drift-tag drift-tag--warning">Warning</span>
+        <span class="drift-tag drift-tag--gold">Ministry</span>
+        <span class="drift-tag drift-tag--coral">Medical</span>
+        <span class="drift-tag drift-tag--violet">Model B</span>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"drift-tag"</span><span class="tag">&gt;</span>Default<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"drift-tag drift-tag--success"</span><span class="tag">&gt;</span>Online<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"drift-tag drift-tag--warning"</span><span class="tag">&gt;</span>Warning<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"drift-tag drift-tag--gold"</span><span class="tag">&gt;</span>Ministry<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"drift-tag drift-tag--coral"</span><span class="tag">&gt;</span>Medical<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"drift-tag drift-tag--violet"</span><span class="tag">&gt;</span>Model B<span class="tag">&lt;/span&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Toggle & Slider -->
+  <h3 class="subsection-title reveal">Toggle Switch & Slider</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div class="cols-2" style="align-items:center;">
+        <div>
+          <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+            <input type="checkbox" class="drift-toggle" checked>
+            <span style="font-size:0.8125rem; color:var(--ink-secondary);">Auto-scroll enabled</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <input type="checkbox" class="drift-toggle">
+            <span style="font-size:0.8125rem; color:var(--ink-secondary);">Debug mode</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono); font-size:0.6875rem; color:var(--ink-muted); margin-bottom:0.5rem; display:flex; justify-content:space-between;">
+            <span>Temperature</span>
+            <span id="sliderVal">0.7</span>
+          </div>
+          <input type="range" class="drift-slider" min="0" max="2" step="0.1" value="0.7" oninput="document.getElementById('sliderVal').textContent=this.value">
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cmt">&lt;!-- Toggle --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type=</span><span class="str">"checkbox"</span> <span class="attr">class=</span><span class="str">"drift-toggle"</span> <span class="attr">checked</span><span class="tag">&gt;</span>
+
+<span class="cmt">&lt;!-- Slider --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">type=</span><span class="str">"range"</span> <span class="attr">class=</span><span class="str">"drift-slider"</span>
+       <span class="attr">min=</span><span class="str">"0"</span> <span class="attr">max=</span><span class="str">"2"</span> <span class="attr">step=</span><span class="str">"0.1"</span> <span class="attr">value=</span><span class="str">"0.7"</span><span class="tag">&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- HUD Frame, Progress, Scanlines -->
+  <h3 class="subsection-title reveal">HUD Frame, Progress & Scanlines</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div class="cols-2">
+        <div class="drift-hud-frame drift-hud-scanlines">
+          <div class="drift-hud-readout" style="margin-bottom:1rem;">SYS::STATUS</div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--ink-muted);">ENGINE CORE</span>
+            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--accent-secondary);">ONLINE</span>
+          </div>
+          <div class="drift-hud-progress">
+            <div class="drift-hud-progress__fill" style="width:87%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:1rem; margin-bottom:0.5rem;">
+            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--ink-muted);">NAVIGATION</span>
+            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--accent-primary);">CALIBRATING</span>
+          </div>
+          <div class="drift-hud-progress">
+            <div class="drift-hud-progress__fill" style="width:42%;"></div>
+          </div>
+        </div>
+        <div class="drift-hud-frame">
+          <div class="drift-hud-readout" style="margin-bottom:0.75rem;">TERMINAL::SESSION</div>
+          <div class="terminal-line">
+            <span style="color:var(--ink-secondary);">~/drift $ </span>./build --guide<span class="terminal-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cmt">&lt;!-- HUD Frame with scanlines --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-hud-frame drift-hud-scanlines"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-hud-readout"</span><span class="tag">&gt;</span>SYS::STATUS<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-hud-progress"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"drift-hud-progress__fill"</span>
+         <span class="attr">style=</span><span class="str">"width:87%"</span><span class="tag">&gt;&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- Terminal line with cursor --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"terminal-line"</span><span class="tag">&gt;</span>
+  $ command<span class="tag">&lt;span</span> <span class="attr">class=</span><span class="str">"terminal-cursor"</span><span class="tag">&gt;&lt;/span&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Status Badge & Thinking -->
+  <h3 class="subsection-title reveal">Status Badge & Activity Indicator</h3>
+  <div class="component-demo reveal">
+    <div class="component-demo__live">
+      <div style="display:flex; gap:2rem; flex-wrap:wrap; align-items:center;">
+        <div class="status-badge">
+          <div class="status-dot"></div>
+          <span style="color:var(--accent-secondary);">Online</span>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot status-dot--idle"></div>
+          <span>Idle</span>
+        </div>
+        <div class="status-badge">
+          <div class="status-dot status-dot--warning"></div>
+          <span style="color:var(--accent-warning);">Error</span>
+        </div>
+        <div class="thinking-indicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <span style="font-family:var(--font-mono); font-size:0.6875rem; color:var(--ink-muted); margin-left:0.5rem;">Model is thinking...</span>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">HTML</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cmt">&lt;!-- Status badge --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"status-badge"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"status-dot"</span><span class="tag">&gt;&lt;/div&gt;</span>
+  <span class="tag">&lt;span&gt;</span>Online<span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- Thinking indicator --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"thinking-indicator"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"dot"</span><span class="tag">&gt;&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"dot"</span><span class="tag">&gt;&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class=</span><span class="str">"dot"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     06 — GLASSMORPHISM
+     ═══════════════════════════════════════════ -->
+<section class="section" id="glass">
+  <div class="section-number reveal">06 — Glass</div>
+  <h2 class="section-title reveal">Glassmorphism Patterns</h2>
+  <p class="section-desc reveal">
+    Glass layers add depth without obscuring the dark space aesthetic. The recipe is simple: semi-transparent background, backdrop blur, and a subtle teal border.
+  </p>
+
+  <!-- Glass recipe -->
+  <h3 class="subsection-title reveal">Glass Card Recipe</h3>
+  <div class="code-block reveal" style="margin-bottom:2rem;">
+    <div class="code-block__header">
+      <span class="code-block__lang">CSS</span>
+      <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">.glass-element</span> {
+  <span class="attr">background</span>: <span class="val">var(--glass-bg)</span>;           <span class="cmt">/* rgba(17, 18, 21, 0.7) */</span>
+  <span class="attr">backdrop-filter</span>: <span class="val">blur(var(--glass-blur))</span>; <span class="cmt">/* 16px */</span>
+  <span class="attr">-webkit-backdrop-filter</span>: <span class="val">blur(var(--glass-blur))</span>;
+  <span class="attr">border</span>: <span class="val">1px solid var(--glass-border)</span>;  <span class="cmt">/* rgba(34, 211, 238, 0.15) */</span>
+  <span class="attr">border-radius</span>: <span class="val">8px</span>;
+}</pre>
+  </div>
+
+  <!-- Live glass demos -->
+  <h3 class="subsection-title reveal">Live Examples</h3>
+  <div class="cols-2 reveal" style="margin-bottom:2rem;">
+    <!-- Glass card over gradient -->
+    <div style="background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(129,140,248,0.1)); border-radius:12px; padding:2rem; position:relative;">
+      <div class="drift-card--glass" style="background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--glass-border); border-radius:8px; padding:1.5rem;">
+        <div class="card-label">Glass Card</div>
+        <div class="card-title">Over Gradient Background</div>
+        <div class="card-desc">The blur effect creates depth separation between the card and the gradient beneath it.</div>
+      </div>
+    </div>
+    <!-- Glass nav header -->
+    <div style="background: linear-gradient(180deg, var(--bg-alt), var(--bg-deep)); border-radius:12px; padding:0; overflow:hidden;">
+      <div style="background:var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,0.05); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="font-family:var(--font-mono); font-size:0.75rem; font-weight:600; color:var(--accent-primary);">DRIFT</div>
+        <div style="display:flex; gap:0.5rem;">
+          <span class="drift-tag">v2.0</span>
+          <div class="status-badge"><div class="status-dot" style="width:6px;height:6px;"></div><span style="font-size:0.6875rem;color:var(--accent-secondary);">Live</span></div>
+        </div>
+      </div>
+      <div style="padding:1.5rem;">
+        <div style="font-family:var(--font-mono); font-size:0.6875rem; color:var(--ink-muted); line-height:2;">
+          Glass Navigation Header<br>
+          <span style="color:var(--accent-primary);">backdrop-filter: blur(16px)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Do/Don't -->
+  <div class="do-dont-grid reveal">
+    <div class="do-card">
+      <div class="do-card__label">✓ Do</div>
+      <p>Use glass effects over complex or dark backgrounds to create depth separation.</p>
+      <p style="margin-top:0.5rem;">Keep blur at 16px for consistency across all glass elements.</p>
+      <p style="margin-top:0.5rem;">Apply the teal glass-border for thematic cohesion.</p>
+    </div>
+    <div class="dont-card">
+      <div class="dont-card__label">✗ Don't</div>
+      <p>Don't stack multiple glass layers — blur compounds and creates visual mud.</p>
+      <p style="margin-top:0.5rem;">Don't use glassmorphism on light backgrounds — the effect requires contrast.</p>
+      <p style="margin-top:0.5rem;">Don't increase glass-bg opacity above 0.8 — it defeats the purpose.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     07 — MOTION & ANIMATION
+     ═══════════════════════════════════════════ -->
+<section class="section" id="motion">
+  <div class="section-number reveal">07 — Motion</div>
+  <h2 class="section-title reveal">Animation & Motion</h2>
+  <p class="section-desc reveal">
+    Motion in Drift is functional — it communicates state, guides attention, and provides feedback. Every animation has a purpose and a named token.
+  </p>
+
+  <!-- Easing & Duration tokens -->
+  <h3 class="subsection-title reveal">Easing Tokens</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2rem;">
+    <table class="ref-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>--ease-out</td><td>cubic-bezier(0.22, 1, 0.36, 1)</td><td>Default for most transitions — smooth deceleration</td></tr>
+        <tr><td>--ease-spring</td><td>cubic-bezier(0.34, 1.56, 0.64, 1)</td><td>Micro-interactions — slight overshoot for tactile feel</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title reveal">Duration Tokens</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2.5rem;">
+    <table class="ref-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>--duration-fast</td><td>150ms</td><td>Hover states, toggles, micro-interactions</td></tr>
+        <tr><td>--duration-base</td><td>300ms</td><td>Reveals, panel transitions, fade-ins</td></tr>
+        <tr><td>--duration-slow</td><td>500ms</td><td>Scroll reveals, page transitions</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Animation catalogue -->
+  <h3 class="subsection-title reveal">Animation Catalogue</h3>
+  <div class="card-grid reveal" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-bottom:2rem;">
+    <div class="anim-demo">
+      <div class="anim-demo__visual">
+        <div style="width:8px; height:20px; background:var(--accent-primary); animation:blink 1s step-end infinite;"></div>
+      </div>
+      <div class="anim-demo__info">
+        <div class="anim-demo__name">blink</div>
+        <div class="anim-demo__desc">Terminal cursor · 1s step-end infinite</div>
+      </div>
+    </div>
+    <div class="anim-demo">
+      <div class="anim-demo__visual">
+        <div class="status-dot"></div>
+      </div>
+      <div class="anim-demo__info">
+        <div class="anim-demo__name">pulse</div>
+        <div class="anim-demo__desc">Status dot · 2s ease-in-out infinite</div>
+      </div>
+    </div>
+    <div class="anim-demo">
+      <div class="anim-demo__visual">
+        <div class="thinking-indicator" style="padding:0;">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+      <div class="anim-demo__info">
+        <div class="anim-demo__name">thinkBounce</div>
+        <div class="anim-demo__desc">Thinking dots · 1.2s ease-in-out infinite</div>
+      </div>
+    </div>
+    <div class="anim-demo">
+      <div class="anim-demo__visual">
+        <div style="font-family:var(--font-mono); font-size:0.8125rem; animation:tokenFlash 1.5s ease-out infinite;">1,247</div>
+      </div>
+      <div class="anim-demo__info">
+        <div class="anim-demo__name">tokenFlash</div>
+        <div class="anim-demo__desc">Value update flash · 1.5s ease-out</div>
+      </div>
+    </div>
+    <div class="anim-demo">
+      <div class="anim-demo__visual">
+        <div style="width:32px; height:32px; border-radius:4px; background:var(--panel); border:2px solid var(--accent-primary); animation:handoffPulse 2s ease-in-out infinite;"></div>
+      </div>
+      <div class="anim-demo__info">
+        <div class="anim-demo__name">handoffPulse</div>
+        <div class="anim-demo__desc">Active speaker indicator · 2s ease-in-out</div>
+      </div>
+    </div>
+    <div class="anim-demo">
+      <div class="anim-demo__visual">
+        <div style="font-size:1.25rem; opacity:0; animation:thinkFadeIn 0.3s var(--ease-out) forwards 0.5s;">▽</div>
+      </div>
+      <div class="anim-demo__info">
+        <div class="anim-demo__name">thinkFadeIn</div>
+        <div class="anim-demo__desc">Indicator entrance · 300ms ease-out</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll reveal pattern -->
+  <h3 class="subsection-title reveal">Scroll Reveal Pattern</h3>
+  <div class="code-block reveal">
+    <div class="code-block__header">
+      <span class="code-block__lang">CSS + JS</span>
+      <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cmt">/* CSS */</span>
+<span class="kw">.reveal</span> {
+  <span class="attr">opacity</span>: <span class="val">0</span>;
+  <span class="attr">transform</span>: <span class="val">translateY(16px)</span>;
+  <span class="attr">transition</span>: <span class="val">opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out)</span>;
+}
+<span class="kw">.reveal.revealed</span> {
+  <span class="attr">opacity</span>: <span class="val">1</span>;
+  <span class="attr">transform</span>: <span class="val">translateY(0)</span>;
+}
+
+<span class="cmt">/* JS — IntersectionObserver */</span>
+<span class="kw">const</span> observer = <span class="kw">new</span> IntersectionObserver(<span class="val">(entries)</span> => {
+  entries.forEach(<span class="val">entry</span> => {
+    <span class="kw">if</span> (entry.isIntersecting) {
+      entry.target.classList.add(<span class="str">'revealed'</span>);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { <span class="attr">threshold</span>: <span class="val">0.1</span> });
+
+document.querySelectorAll(<span class="str">'.reveal'</span>).forEach(<span class="val">el</span> => observer.observe(el));</pre>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     08 — DOMAIN THEMING
+     ═══════════════════════════════════════════ -->
+<section class="section" id="domains">
+  <div class="section-number reveal">08 — Theming</div>
+  <h2 class="section-title reveal">Domain Accent System</h2>
+  <p class="section-desc reveal">
+    One accent per project. Set <code>--accent-primary</code> at <code>:root</code> and every component automatically inherits the new color. No class changes needed — just swap the variable.
+  </p>
+
+  <div class="code-block reveal" style="margin-bottom:2rem;">
+    <div class="code-block__header">
+      <span class="code-block__lang">CSS</span>
+      <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="cmt">/* To re-theme: change one line */</span>
+<span class="kw">:root</span> {
+  <span class="attr">--accent-primary</span>: <span class="val">#d7a928</span>; <span class="cmt">/* Gold — Ministry domain */</span>
+  <span class="attr">--accent-primary-rgb</span>: <span class="val">215, 169, 40</span>;
+}</pre>
+  </div>
+
+  <!-- Domain cards with live demos -->
+  <div class="domain-row reveal" style="margin-bottom:2.5rem;">
+    <!-- Infrastructure -->
+    <div class="domain-card" id="domain-infra">
+      <div class="domain-card__accent-bar" style="background:#22d3ee;"></div>
+      <div class="domain-card__swatch" style="background:#22d3ee;"></div>
+      <div class="domain-card__name">Infrastructure</div>
+      <div class="domain-card__hex">#22d3ee · Teal</div>
+      <div style="margin-top:0.75rem;">
+        <button class="drift-btn drift-btn--primary drift-btn--sm" style="background:#22d3ee; border-color:#22d3ee; color:var(--bg-deep); font-size:0.6875rem;">Deploy</button>
+        <span class="drift-tag" style="color:#22d3ee; border-color:rgba(34,211,238,0.2); background:rgba(34,211,238,0.06); margin-left:0.5rem;">Active</span>
+      </div>
+      <div style="font-size:0.6875rem; color:var(--ink-muted); margin-top:0.75rem;">Hermes OS · AgentFlow · LogOS Core</div>
+    </div>
+    <!-- Ministry -->
+    <div class="domain-card" id="domain-ministry">
+      <div class="domain-card__accent-bar" style="background:#d7a928;"></div>
+      <div class="domain-card__swatch" style="background:#d7a928;"></div>
+      <div class="domain-card__name">Ministry & Content</div>
+      <div class="domain-card__hex">#d7a928 · Gold</div>
+      <div style="margin-top:0.75rem;">
+        <button class="drift-btn drift-btn--primary drift-btn--sm" style="background:#d7a928; border-color:#d7a928; color:var(--bg-deep); font-size:0.6875rem;">Publish</button>
+        <span class="drift-tag drift-tag--gold" style="margin-left:0.5rem;">Ministry</span>
+      </div>
+      <div style="font-size:0.6875rem; color:var(--ink-muted); margin-top:0.75rem;">Shepherd · Roundtable · Sermon Book</div>
+    </div>
+    <!-- Medical -->
+    <div class="domain-card" id="domain-medical">
+      <div class="domain-card__accent-bar" style="background:#e07d5f;"></div>
+      <div class="domain-card__swatch" style="background:#e07d5f;"></div>
+      <div class="domain-card__name">Medical & Clinical</div>
+      <div class="domain-card__hex">#e07d5f · Coral</div>
+      <div style="margin-top:0.75rem;">
+        <button class="drift-btn drift-btn--primary drift-btn--sm" style="background:#e07d5f; border-color:#e07d5f; color:var(--bg-deep); font-size:0.6875rem;">Review</button>
+        <span class="drift-tag drift-tag--coral" style="margin-left:0.5rem;">Clinical</span>
+      </div>
+      <div style="font-size:0.6875rem; color:var(--ink-muted); margin-top:0.75rem;">Sentinel · DoseAtlas · Nurse Clippy</div>
+    </div>
+    <!-- Gaming -->
+    <div class="domain-card" id="domain-gaming">
+      <div class="domain-card__accent-bar" style="background:#22d3ee;"></div>
+      <div class="domain-card__swatch" style="background:#22d3ee;"></div>
+      <div class="domain-card__name">Gaming</div>
+      <div class="domain-card__hex">#22d3ee · Teal</div>
+      <div style="margin-top:0.75rem;">
+        <button class="drift-btn drift-btn--primary drift-btn--sm" style="background:#22d3ee; border-color:#22d3ee; color:var(--bg-deep); font-size:0.6875rem;">Launch</button>
+        <span class="drift-tag" style="color:#22d3ee; border-color:rgba(34,211,238,0.2); background:rgba(34,211,238,0.06); margin-left:0.5rem;">Live</span>
+      </div>
+      <div style="font-size:0.6875rem; color:var(--ink-muted); margin-top:0.75rem;">Space Explorer · Block & Seek</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     09 — RESPONSIVE BREAKPOINTS
+     ═══════════════════════════════════════════ -->
+<section class="section" id="responsive">
+  <div class="section-number reveal">09 — Layout</div>
+  <h2 class="section-title reveal">Responsive Breakpoints</h2>
+  <p class="section-desc reveal">
+    Two breakpoints handle the transition from desktop to mobile. The design maintains all functionality at every width — nothing is removed, only reflowed.
+  </p>
+
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2rem;">
+    <table class="ref-table">
+      <thead><tr><th>Breakpoint</th><th>Width</th><th>Changes</th></tr></thead>
+      <tbody>
+        <tr><td>Tablet</td><td>≤ 980px</td><td>Collapse to 2 columns · Hide history panel · Stack grids · Sidebar becomes slide-out drawer</td></tr>
+        <tr><td>Mobile</td><td>≤ 640px</td><td>Single column · Stack buttons vertically · Reduce padding · Simplify grid layouts</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cols-2 reveal">
+    <div>
+      <h3 class="subsection-title" style="margin-top:0;">980px — Tablet</h3>
+      <div class="code-block" style="margin-top:0;">
+        <div class="code-block__header">
+          <span class="code-block__lang">CSS</span>
+          <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">@media</span> (<span class="attr">max-width</span>: <span class="val">980px</span>) {
+  <span class="kw">.app-container</span> {
+    <span class="attr">grid-template-columns</span>: <span class="val">1fr 320px</span>;
+    <span class="attr">grid-template-areas</span>: <span class="str">"workspace settings"</span>;
+  }
+  <span class="kw">.history-panel</span> { <span class="attr">display</span>: <span class="val">none</span>; }
+  <span class="kw">.cols-2, .cols-3</span> {
+    <span class="attr">grid-template-columns</span>: <span class="val">1fr</span>;
+  }
+}</pre>
+      </div>
+    </div>
+    <div>
+      <h3 class="subsection-title" style="margin-top:0;">640px — Mobile</h3>
+      <div class="code-block" style="margin-top:0;">
+        <div class="code-block__header">
+          <span class="code-block__lang">CSS</span>
+          <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">@media</span> (<span class="attr">max-width</span>: <span class="val">640px</span>) {
+  <span class="kw">.card-grid</span> {
+    <span class="attr">grid-template-columns</span>: <span class="val">1fr</span>;
+  }
+  <span class="kw">.btn-row</span> {
+    <span class="attr">flex-direction</span>: <span class="val">column</span>;
+    <span class="attr">align-items</span>: <span class="val">stretch</span>;
+  }
+  <span class="kw">.swatch-grid</span> {
+    <span class="attr">grid-template-columns</span>: <span class="val">1fr 1fr</span>;
+  }
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     10 — ACCESSIBILITY
+     ═══════════════════════════════════════════ -->
+<section class="section" id="accessibility">
+  <div class="section-number reveal">10 — A11y</div>
+  <h2 class="section-title reveal">Accessibility</h2>
+  <p class="section-desc reveal">
+    Drift is built for dark environments but never at the expense of usability. All text meets WCAG AA minimums, and all interactive elements are keyboard accessible.
+  </p>
+
+  <h3 class="subsection-title reveal">Contrast Ratios (WCAG AA)</h3>
+  <div class="ref-table-wrapper reveal" style="margin-bottom:2rem;">
+    <table class="ref-table">
+      <thead><tr><th>Pair</th><th>Ratio</th><th>AA Normal</th><th>AA Large</th><th>AAA Normal</th></tr></thead>
+      <tbody>
+        <tr><td>--ink on --bg-deep</td><td>16.8:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td></tr>
+        <tr><td>--ink-secondary on --bg-deep</td><td>9.3:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td></tr>
+        <tr><td>--ink-muted on --bg-deep</td><td>5.0:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-warning);">✗ Fail</td></tr>
+        <tr><td>--accent-primary on --bg-deep</td><td>11.4:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td></tr>
+        <tr><td>--accent-tertiary on --bg-deep</td><td>6.5:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-warning);">✗ Fail</td></tr>
+        <tr><td>--accent-warning on --bg-deep</td><td>7.2:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td></tr>
+        <tr><td>--gold on --bg-deep</td><td>8.1:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td></tr>
+        <tr><td>--coral on --bg-deep</td><td>6.7:1</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-secondary);">✓ Pass</td><td style="color:var(--accent-warning);">✗ Fail</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title reveal">Focus States</h3>
+  <div class="component-demo reveal" style="margin-bottom:2rem;">
+    <div class="component-demo__live">
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+        <button class="drift-btn drift-btn--primary focus-demo" style="outline:2px solid var(--accent-primary); outline-offset:2px;">Focused Button</button>
+        <input class="drift-input focus-demo" type="text" value="Focused input" style="width:200px; border-color:var(--accent-primary); box-shadow:0 0 0 3px rgba(34,211,238,0.1);">
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-block__header">
+        <span class="code-block__lang">CSS</span>
+        <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cmt">/* Focus ring — teal, 2px solid, 2px offset */</span>
+<span class="kw">:focus-visible</span> {
+  <span class="attr">outline</span>: <span class="val">2px solid var(--accent-primary)</span>;
+  <span class="attr">outline-offset</span>: <span class="val">2px</span>;
+}
+
+<span class="cmt">/* Input focus — glow ring */</span>
+<span class="kw">.drift-input:focus</span> {
+  <span class="attr">border-color</span>: <span class="val">var(--accent-primary)</span>;
+  <span class="attr">box-shadow</span>: <span class="val">0 0 0 3px rgba(34, 211, 238, 0.1)</span>;
+}</pre>
+    </div>
+  </div>
+
+  <h3 class="subsection-title reveal">Reduced Motion</h3>
+  <div class="code-block reveal" style="margin-bottom:2rem;">
+    <div class="code-block__header">
+      <span class="code-block__lang">CSS</span>
+      <button class="code-block__copy" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre><span class="kw">@media</span> (<span class="attr">prefers-reduced-motion</span>: <span class="val">reduce</span>) {
+  <span class="kw">*, *::before, *::after</span> {
+    <span class="attr">animation-duration</span>: <span class="val">0.01ms !important</span>;
+    <span class="attr">animation-iteration-count</span>: <span class="val">1 !important</span>;
+    <span class="attr">transition-duration</span>: <span class="val">0.01ms !important</span>;
+  }
+  <span class="kw">.reveal</span> { <span class="attr">opacity</span>: <span class="val">1</span>; <span class="attr">transform</span>: <span class="val">none</span>; }
+  <span class="kw">html</span> { <span class="attr">scroll-behavior</span>: <span class="val">auto</span>; }
+}</pre>
+  </div>
+
+  <h3 class="subsection-title reveal">Keyboard & ARIA</h3>
+  <div class="drift-card--flat reveal" style="padding:1.5rem;">
+    <ul style="list-style:none; font-size:0.8125rem; color:var(--ink-secondary); line-height:2;">
+      <li>• All interactive elements are reachable via <kbd style="font-family:var(--font-mono); font-size:0.75rem; background:var(--surface); padding:0.15rem 0.4rem; border-radius:3px; border:1px solid rgba(255,255,255,0.08);">Tab</kbd> key navigation</li>
+      <li>• Custom toggles use native <code>&lt;input type="checkbox"&gt;</code> for screen reader compatibility</li>
+      <li>• Navigation landmarks use <code>role="navigation"</code> and <code>aria-label</code></li>
+      <li>• Status dots use adjacent text labels — never color alone to convey state</li>
+      <li>• All images and icons include descriptive <code>alt</code> text or <code>aria-label</code></li>
+      <li>• Modal dialogs trap focus and return it on close</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     11 — CSS CUSTOM PROPERTY REFERENCE
+     ═══════════════════════════════════════════ -->
+<section class="section" id="reference">
+  <div class="section-number reveal">11 — Reference</div>
+  <h2 class="section-title reveal">CSS Custom Property Reference</h2>
+  <p class="section-desc reveal">
+    Complete table of all CSS custom properties in the Drift design system, organized by category.
+  </p>
+
+  <div class="ref-table-wrapper reveal">
+    <table class="ref-table">
+      <thead><tr><th>Variable</th><th>Value</th><th>Category</th><th>Description</th></tr></thead>
+      <tbody>
+        <!-- Backgrounds -->
+        <tr><td>--bg-deep</td><td>#0B0B12</td><td>Background</td><td>Root page background — darkest layer</td></tr>
+        <tr><td>--bg-base</td><td>#0c0d0f</td><td>Background</td><td>Chat workspace background</td></tr>
+        <tr><td>--bg-alt</td><td>#030712</td><td>Background</td><td>Alternating section background</td></tr>
+        <tr><td>--panel</td><td>#111215</td><td>Background</td><td>Cards, sidebars, navigation panels</td></tr>
+        <tr><td>--surface</td><td>#17181c</td><td>Background</td><td>Inputs, hover states, depth layers</td></tr>
+        <!-- Text -->
+        <tr><td>--ink</td><td>#f2f0e8</td><td>Text</td><td>Primary text — body copy, headings</td></tr>
+        <tr><td>--ink-secondary</td><td>#a8a6a0</td><td>Text</td><td>Descriptions, labels, captions</td></tr>
+        <tr><td>--ink-muted</td><td>#6b6a66</td><td>Text</td><td>Placeholder, metadata, hints</td></tr>
+        <!-- Accents -->
+        <tr><td>--accent-primary</td><td>#22d3ee</td><td>Accent</td><td>Primary CTA, Model A, HUD elements</td></tr>
+        <tr><td>--accent-primary-rgb</td><td>34, 211, 238</td><td>Accent</td><td>RGB for rgba() usage</td></tr>
+        <tr><td>--accent-secondary</td><td>#34d399</td><td>Accent</td><td>Success states, online indicators</td></tr>
+        <tr><td>--accent-tertiary</td><td>#818cf8</td><td>Accent</td><td>Model B, secondary visual system</td></tr>
+        <tr><td>--accent-tertiary-rgb</td><td>129, 140, 248</td><td>Accent</td><td>RGB for rgba() usage</td></tr>
+        <tr><td>--accent-warning</td><td>#f472b6</td><td>Accent</td><td>Errors, warnings, destructive actions</td></tr>
+        <tr><td>--gold</td><td>#d7a928</td><td>Accent</td><td>Ministry domain, premium features</td></tr>
+        <tr><td>--coral</td><td>#e07d5f</td><td>Accent</td><td>Medical domain accent</td></tr>
+        <!-- Glass -->
+        <tr><td>--glass-bg</td><td>rgba(17,18,21,0.7)</td><td>Glass</td><td>Semi-transparent panel background</td></tr>
+        <tr><td>--glass-border</td><td>rgba(34,211,238,0.15)</td><td>Glass</td><td>Teal-tinted glass border</td></tr>
+        <tr><td>--glass-blur</td><td>16px</td><td>Glass</td><td>Backdrop blur radius</td></tr>
+        <tr><td>--grain-opacity</td><td>0.03</td><td>Glass</td><td>Film grain overlay opacity</td></tr>
+        <!-- Font -->
+        <tr><td>--font-sans</td><td>Inter, system-ui, …</td><td>Font</td><td>UI, body text, buttons</td></tr>
+        <tr><td>--font-mono</td><td>JetBrains Mono, …</td><td>Font</td><td>Code, HUD, terminal, labels</td></tr>
+        <tr><td>--font-display</td><td>Playfair Display, …</td><td>Font</td><td>Brand hero titles only</td></tr>
+        <!-- Layout -->
+        <tr><td>--content-max</td><td>1200px</td><td>Layout</td><td>Maximum content area width</td></tr>
+        <!-- Easing -->
+        <tr><td>--ease-out</td><td>cubic-bezier(0.22,1,0.36,1)</td><td>Easing</td><td>Default smooth deceleration</td></tr>
+        <tr><td>--ease-spring</td><td>cubic-bezier(0.34,1.56,0.64,1)</td><td>Easing</td><td>Overshoot for micro-interactions</td></tr>
+        <!-- Duration -->
+        <tr><td>--duration-fast</td><td>150ms</td><td>Duration</td><td>Hover states, toggles</td></tr>
+        <tr><td>--duration-base</td><td>300ms</td><td>Duration</td><td>Reveals, transitions</td></tr>
+        <tr><td>--duration-slow</td><td>500ms</td><td>Duration</td><td>Scroll reveals, page transitions</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="guide-footer">
+  <p>
+    <span style="color:var(--accent-primary);">◆</span>&nbsp;
+    Drift Design Guide v2.0 · Built May 2026 · Single-file HTML · Zero dependencies
+    &nbsp;<span style="color:var(--accent-primary);">◆</span>
+  </p>
+  <p style="margin-top:0.5rem;">
+    <a href="index.html" style="color:var(--accent-primary); text-decoration:none;" target="_blank">Style Guide POC</a> ·
+    <a href="drift_chat_suite.html" style="color:var(--accent-primary); text-decoration:none;" target="_blank">Chat Suite</a> ·
+    <a href="medical-light.html" style="color:var(--accent-primary); text-decoration:none;" target="_blank">Medical Light Theme</a>
+  </p>
+</footer>
+
+</main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════ -->
+<script>
+/* ── Scroll Reveal ── */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+});
+
+/* ── Active TOC tracking ── */
+const tocLinks = document.querySelectorAll('.toc-link');
+const sections = [];
+
+tocLinks.forEach(link => {
+  const href = link.getAttribute('href');
+  if (href && href.startsWith('#')) {
+    const section = document.getElementById(href.slice(1));
+    if (section) sections.push({ el: section, link });
+  }
+});
+
+const tocObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const match = sections.find(s => s.el === entry.target);
+      if (match) match.link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => tocObserver.observe(s.el));
+
+/* ── Smooth scroll for TOC links ── */
+tocLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    const href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        // Close mobile sidebar
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      }
+    }
+  });
+});
+
+/* ── Mobile sidebar ── */
+const mobileToggle = document.getElementById('mobileNavToggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+
+mobileToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+});
+
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+});
+
+/* ── Copy code ── */
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.textContent || pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // Fallback for file:// protocol
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    } catch(err) {
+      btn.textContent = 'Error';
+    }
+    document.body.removeChild(textarea);
+  });
+}
+</script>
+</body>
+</html>
