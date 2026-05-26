@@ -3,267 +3,228 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgentFlow — Ecosystem Roadmap</title>
+  <title>AgentFlow — Ecosystem Roadmap (v2)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="drift.css">
   <style>
-    /* ═══════════════════════════════════════════
-       ROADMAP-SPECIFIC STYLES
-       ═══════════════════════════════════════════ */
     body { background: var(--bg-base); color: var(--ink); font-family: var(--font-sans); min-height: 100vh; }
-    a { color: var(--accent-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: var(--accent-primary); }
 
-    /* ─── Header ─── */
-    .rm-header {
-      background: var(--panel);
-      border-bottom: 1px solid var(--border-panel);
-      padding: 1.5rem 2rem;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 100;
-      backdrop-filter: blur(var(--glass-blur));
-    }
-    .rm-header h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
-    .rm-header .tag { font-size: 0.7rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(var(--accent-primary-rgb), 0.15); color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.08em; margin-left: 0.75rem; }
-    .rm-header .meta { font-size: 0.8rem; color: var(--ink-muted); font-family: var(--font-mono); }
+    .rm-header { background: var(--panel); border-bottom: 1px solid var(--border-panel); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(var(--glass-blur)); }
+    .rm-header h1 { font-size: 1.25rem; font-weight: 600; }
+    .rm-header .tag { font-size: 0.7rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(var(--accent-primary-rgb),0.15); color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.08em; margin-left: 0.75rem; }
+    .rm-header .meta { font-size: 0.78rem; color: var(--ink-muted); font-family: var(--font-mono); }
 
-    /* ─── Hero ─── */
-    .rm-hero {
-      max-width: var(--content-max); margin: 3rem auto 2rem; padding: 0 2rem;
-    }
-    .rm-hero h2 { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.75rem; }
-    .rm-hero p { font-size: 1.1rem; color: var(--ink-secondary); max-width: 650px; line-height: 1.7; }
+    .rm-hero { max-width: var(--content-max); margin: 3rem auto 2rem; padding: 0 2rem; }
+    .rm-hero h2 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 0.75rem; }
+    .rm-hero .sub { font-size: 1rem; color: var(--ink-secondary); max-width: 650px; line-height: 1.7; }
 
-    /* ─── Principle Bar ─── */
-    .principle-bar {
-      max-width: var(--content-max); margin: 0 auto 3rem; padding: 0 2rem;
-      background: var(--panel); border: 1px solid var(--border-panel); border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .principle-bar code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-primary); }
+    .principle-bar { max-width: var(--content-max); margin: 0 auto 2rem; padding: 0 2rem; }
+    .principle-bar div { background: var(--panel); border: 1px solid var(--border-panel); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .principle-bar code { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-primary); }
     .principle-bar span { font-size: 0.9rem; color: var(--ink-secondary); }
 
-    /* ─── Section ─── */
     .rm-section { max-width: var(--content-max); margin: 0 auto 3rem; padding: 0 2rem; }
-    .rm-section h3 {
-      font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--accent-primary); margin-bottom: 1.25rem;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
+    .rm-section h3 { font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-primary); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
     .rm-section h3::before { content: ''; flex: 1; height: 1px; background: var(--border-panel); }
 
-    /* ─── Ecosystem Diagram ─── */
-    .eco-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1rem; margin-bottom: 2rem;
-    }
-    .eco-card {
-      background: var(--panel); border: 1px solid var(--border-panel); border-radius: 12px;
-      padding: 1.25rem;
-      transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
-    }
-    .eco-card:hover { border-color: rgba(var(--accent-primary-rgb), 0.3); box-shadow: var(--card-shadow-hover); }
-    .eco-card.engine { border-left: 3px solid var(--accent-primary); }
-    .eco-card.producer { border-left: 3px solid var(--accent-tertiary); }
-    .eco-card.consumer { border-left: 3px solid var(--accent-secondary); }
-    .eco-card.cloud { border-left: 3px solid var(--accent-warning); }
-    .eco-card .name { font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+    .eco-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+    .eco-card { background: var(--panel); border: 1px solid var(--border-panel); border-radius: 12px; padding: 1.25rem; transition: border-color var(--duration-base,0.3s) var(--ease-out,0.22,1,0.36,1), box-shadow var(--duration-base,0.3s) var(--ease-out,0.22,1,0.36,1); }
+    .eco-card:hover { border-color: rgba(var(--accent-primary-rgb),0.3); box-shadow: 0 10px 30px rgba(34,211,238,0.08); }
+    .eco-card.primary { border-left: 3px solid var(--accent-primary); }
+    .eco-card.refine { border-left: 3px solid var(--accent-tertiary); }
+    .eco-card.gateway { border-left: 3px solid var(--accent-secondary); }
+    .eco-card.harness { border-left: 3px solid var(--accent-warning); }
+    .eco-card.infra { border-left: 3px solid var(--ink-muted); }
+    .eco-card .name { font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
     .eco-card .name .badge { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; }
-    .badge.done { background: rgba(var(--accent-secondary-rgb), 0.15); color: var(--accent-secondary); }
-    .badge.live { background: rgba(var(--accent-primary-rgb), 0.15); color: var(--accent-primary); }
-    .badge.upcoming { background: rgba(var(--accent-tertiary-rgb), 0.15); color: var(--accent-tertiary); }
+    .badge.priority { background: rgba(var(--accent-primary-rgb),0.15); color: var(--accent-primary); }
+    .badge.live { background: rgba(var(--accent-secondary-rgb),0.15); color: var(--accent-secondary); }
+    .badge.upcoming { background: rgba(var(--accent-tertiary-rgb),0.15); color: var(--accent-tertiary); }
     .badge.future { background: rgba(255,255,255,0.05); color: var(--ink-muted); }
     .eco-card .desc { font-size: 0.82rem; color: var(--ink-secondary); line-height: 1.6; }
     .eco-card .stack { font-size: 0.72rem; color: var(--ink-muted); font-family: var(--font-mono); margin-top: 0.4rem; }
 
-    /* ─── Roadmap Timeline ─── */
+    .flow-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 0.75rem 0; padding: 0.75rem 1rem; background: var(--panel); border: 1px solid var(--border-panel); border-radius: 10px; font-size: 0.82rem; }
+    .flow-row .node { padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 500; font-size: 0.78rem; }
+    .flow-row .node.primary { background: rgba(var(--accent-primary-rgb),0.1); color: var(--accent-primary); }
+    .flow-row .node.refine { background: rgba(var(--accent-tertiary-rgb),0.1); color: var(--accent-tertiary); }
+    .flow-row .node.gateway { background: rgba(var(--accent-secondary-rgb),0.1); color: var(--accent-secondary); }
+    .flow-row .node.harness { background: rgba(var(--accent-warning),0.1); color: var(--accent-warning); }
+    .flow-row .node.store { background: rgba(255,255,255,0.04); color: var(--ink-muted); }
+    .flow-row .arrow { color: var(--ink-muted); font-family: var(--font-mono); font-size: 0.7rem; }
+    .flow-row .label { font-family: var(--font-mono); font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.02em; }
+
     .timeline { position: relative; padding-left: 2rem; }
     .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border-panel); }
     .tl-item { position: relative; margin-bottom: 1.5rem; padding-left: 1.5rem; }
     .tl-item::before { content: ''; position: absolute; left: -1.65rem; top: 0.4rem; width: 12px; height: 12px; border-radius: 50%; border: 2px solid; background: var(--bg-base); }
     .tl-item.step-done::before { background: var(--accent-secondary); border-color: var(--accent-secondary); }
-    .tl-item.step-current::before { background: var(--accent-primary); border-color: var(--accent-primary); box-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.4); }
+    .tl-item.step-current::before { background: var(--accent-primary); border-color: var(--accent-primary); box-shadow: 0 0 8px rgba(var(--accent-primary-rgb),0.4); }
     .tl-item.step-next::before { background: var(--bg-base); border-color: var(--accent-tertiary); }
     .tl-item.step-future::before { background: var(--bg-base); border-color: var(--ink-muted); }
-    .tl-item .num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 0.15rem; }
+    .tl-item .num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted); }
     .tl-item h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
     .tl-item p { font-size: 0.82rem; color: var(--ink-secondary); line-height: 1.5; }
     .tl-item .status-tag { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; }
-    .status-tag.done { background: rgba(var(--accent-secondary-rgb), 0.15); color: var(--accent-secondary); }
-    .status-tag.current { background: rgba(var(--accent-primary-rgb), 0.15); color: var(--accent-primary); animation: pulse-glow 2s ease-in-out infinite; }
-    .status-tag.next { background: rgba(var(--accent-tertiary-rgb), 0.15); color: var(--accent-tertiary); }
+    .status-tag.done { background: rgba(var(--accent-secondary-rgb),0.15); color: var(--accent-secondary); }
+    .status-tag.current { background: rgba(var(--accent-primary-rgb),0.15); color: var(--accent-primary); animation: pulse 2s ease-in-out infinite; }
+    .status-tag.next { background: rgba(var(--accent-tertiary-rgb),0.15); color: var(--accent-tertiary); }
     .status-tag.hold { background: rgba(255,255,255,0.04); color: var(--ink-muted); }
-    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb), 0); } 50% { box-shadow: 0 0 6px 2px rgba(var(--accent-primary-rgb), 0.15); } }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(var(--accent-primary-rgb),0); } 50% { box-shadow: 0 0 6px 2px rgba(var(--accent-primary-rgb),0.15); } }
 
-    /* ─── Deployment Table ─── */
     .dep-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .dep-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); font-weight: 500; padding: 0.75rem 1rem 0.5rem; }
     .dep-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-panel); vertical-align: top; }
     .dep-table tr:last-child td { border: none; }
     .dep-table .url { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-secondary); word-break: break-all; }
-    .dep-table .url a { color: var(--accent-primary); }
 
-    /* ─── UAT Grid ─── */
     .uat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .uat-card { background: var(--panel); border: 1px solid var(--border-panel); border-radius: 10px; padding: 1rem; }
-    .uat-card h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .uat-card h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
     .uat-card .when { font-size: 0.72rem; color: var(--ink-muted); font-family: var(--font-mono); margin-bottom: 0.5rem; }
-    .uat-card ul { margin: 0; padding-left: 1rem; }
-    .uat-card li { font-size: 0.8rem; color: var(--ink-secondary); line-height: 1.6; }
-    .uat-card .checkbox { font-size: 0.8rem; line-height: 1.8; }
-    .uat-card .checkbox label { display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; color: var(--ink-secondary); }
-    .uat-card .checkbox input[type="checkbox"] { appearance: none; width: 14px; height: 14px; border: 1.5px solid var(--ink-muted); border-radius: 3px; margin-top: 3px; cursor: pointer; flex-shrink: 0; }
+    .uat-card li { font-size: 0.78rem; color: var(--ink-secondary); line-height: 1.6; margin-left: 1rem; }
+    .uat-card .checkbox label { display: flex; align-items: flex-start; gap: 0.5rem; cursor: default; font-size: 0.78rem; color: var(--ink-secondary); line-height: 1.6; }
+    .uat-card .checkbox input[type="checkbox"] { appearance: none; width: 13px; height: 13px; border: 1.5px solid var(--ink-muted); border-radius: 3px; margin-top: 3px; flex-shrink: 0; }
     .uat-card .checkbox input[type="checkbox"]:checked { background: var(--accent-primary); border-color: var(--accent-primary); }
 
-    /* ─── Flow arrows (inline SVG connector concept) ─── */
-    .flow-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; padding: 0.75rem 1rem; background: var(--panel); border: 1px solid var(--border-panel); border-radius: 10px; font-size: 0.82rem; }
-    .flow-row .node { padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 500; font-size: 0.78rem; }
-    .flow-row .node.local { background: rgba(var(--accent-primary-rgb), 0.1); color: var(--accent-primary); }
-    .flow-row .node.cloud { background: rgba(var(--accent-warning), 0.1); color: var(--accent-warning); }
-    .flow-row .node.prod { background: rgba(var(--accent-secondary-rgb), 0.1); color: var(--accent-secondary); }
-    .flow-row .arrow { color: var(--ink-muted); font-family: var(--font-mono); font-size: 0.75rem; }
-    .flow-row .label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--ink-muted); letter-spacing: 0.02em; }
+    .rm-footer { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: 0.75rem; border-top: 1px solid var(--border-panel); margin-top: 2rem; }
 
-    /* ─── Responsive ─── */
     @media (max-width: 768px) {
       .eco-grid, .uat-grid { grid-template-columns: 1fr; }
-      .rm-hero h2 { font-size: 1.6rem; }
+      .rm-hero h2 { font-size: 1.5rem; }
       .rm-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-      .dep-table th, .dep-table td { padding: 0.5rem 0.5rem; font-size: 0.75rem; }
-      .flow-row { font-size: 0.72rem; }
     }
-
-    /* ─── Footer ─── */
-    .rm-footer { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: 0.75rem; border-top: 1px solid var(--border-panel); margin-top: 2rem; }
   </style>
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
 <header class="rm-header">
   <div style="display:flex;align-items:center;gap:0.5rem;">
-    <h1>AgentFlow <span class="tag">Roadmap v0.1</span></h1>
+    <h1>AgentFlow <span class="tag">Roadmap v2</span></h1>
   </div>
-  <div class="meta">2026-05-26 &middot; #️⃣ e1bd29a</div>
+  <div class="meta">corrected 2026-05-26</div>
 </header>
 
-<!-- ═══ HERO ═══ -->
 <section class="rm-hero">
-  <h2>Turn prompts into pipelines.</h2>
-  <p>
-    AgentFlow is an open-source orchestration ecosystem for LLM workflows. 
-    Local-first, security-hardened, provider-agnostic. This roadmap shows 
-    every component, where it lives, and what's coming next.
-  </p>
+  <h2>Build agents from the ground up. Run where data lives.</h2>
+  <div class="sub">
+    Architect Chat defines the template. Chat Deck refines and decomposes. 
+    The Library pushes to any agent harness. The engine tracks everything.
+    All data is prompts for sub-agents, based on one consistent template.
+  </div>
 </section>
 
-<!-- ═══ PRINCIPLE ═══ -->
 <div class="principle-bar">
-  <code>core principle</code>
-  <span>Raw session truth stays local first. Cloud gets summarized, intentional sync data.</span>
+  <div>
+    <code>core loop</code>
+    <span><strong>Template → Define → Refine → Deploy → Analyze → Iterate</strong> — one consistent template, any agent harness.</span>
+  </div>
 </div>
 
 <!-- ═══ ECOSYSTEM MAP ═══ -->
 <section class="rm-section">
   <h3>Ecosystem Map</h3>
   <div class="eco-grid">
-    <div class="eco-card engine">
-      <div class="name">
-        agentflow-engine
-        <span class="badge live">live</span>
-      </div>
+
+    <div class="eco-card primary">
+      <div class="name">🏗️ Architect Chat <span class="badge priority">build first</span></div>
       <div class="desc">
-        Data bus. Parses, analyzes, stores session data from every producer. 
-        Serves local HTTP API on <code>:8377</code>. Python stdlib + SQLite.
+        <strong>Primary entry point.</strong> Onboard users, generate the one consistent agent template. 
+        Produces data sets, skills, config, and agent criteria. Spawns AGENTS.md subagent 
+        (CF Worker alpha) that commits to git. Everything flows from here.
+      </div>
+      <div class="stack">HTML/JS · template engine · CF Worker subagent</div>
+    </div>
+
+    <div class="eco-card refine">
+      <div class="name">🧩 Chat Deck <span class="badge upcoming">re-purposed</span></div>
+      <div class="desc">
+        Agent refinement and decomposition. Takes the template from Architect Chat and 
+        refines it through dual-model adversarial conversation. Breaks problems into 
+        sub-tasks, generates orchestration loops, produces finalized agent criteria.
+      </div>
+      <div class="stack">Single HTML · JS · dual-model · localStorage</div>
+    </div>
+
+    <div class="eco-card gateway">
+      <div class="name">📚 Library <span class="badge upcoming">new</span></div>
+      <div class="desc">
+        Browse and deploy gateway. All generated agent definitions, criteria, and templates 
+        in one place. Push to any harness: Codex CLI, agy CLI, Claude, GitHub Copilot, 
+        Azure Copilot Studio, or the engine. Injects criteria directly into each target.
+      </div>
+      <div class="stack">HTML/JS · CF Pages · harness API integrations</div>
+    </div>
+
+    <div class="eco-card primary">
+      <div class="name">⚙️ Engine :8377 <span class="badge live">live</span></div>
+      <div class="desc">
+        Data bus and analysis. Ingests agent definitions, session data, and execution 
+        results from every source. Runs analysis pipeline (quality, hygiene, cost, loops). 
+        Serves HTTP API for consumers. SQLite source of truth.
       </div>
       <div class="stack">Python 3.11 · SQLite · stdlib http.server</div>
     </div>
 
-    <div class="eco-card producer">
-      <div class="name">
-        agentflow-ai-chat-deck
-        <span class="badge live">live</span>
-      </div>
+    <div class="eco-card harness">
+      <div class="name">🎯 Agent Harnesses <span class="badge upcoming">integrations</span></div>
       <div class="desc">
-        Session producer. Dual-model adversarial conversation deck. 
-        Two AI models conversing automatically with user injection controls.
-        POSTs completed sessions to engine.
+        Target execution environments. Codex CLI (GPT-5.5), agy CLI (Gemini 3.5 Flash), 
+        Claude/Jules (Gemini 3.1 Pro), GitHub Copilot, Azure Copilot Studio. 
+        Each receives injected agent criteria from the Library.
       </div>
-      <div class="stack">Single HTML · JS · localStorage · CORS relay</div>
+      <div class="stack">Codex · agy · Claude · GHCP · Azure CS</div>
     </div>
 
-    <div class="eco-card consumer">
-      <div class="name">
-        agentflow-vscode
-        <span class="badge upcoming">upcoming</span>
-      </div>
+    <div class="eco-card infra">
+      <div class="name">🌐 agentflow.site <span class="badge live">live</span></div>
       <div class="desc">
-        Metrics consumer. Workbench dashboard + architect chat panels 
-        inside VS Code. Reads from engine HTTP API with fallback chain.
-      </div>
-      <div class="stack">TypeScript · VS Code API · Webviews</div>
-    </div>
-
-    <div class="eco-card">
-      <div class="name">
-        agentflow-site
-        <span class="badge live">live</span>
-      </div>
-      <div class="desc">
-        Marketing site + ecosystem hub. Product pages, docs, and 
-        navigation to all ecosystem surfaces. Hosted on CF Pages.
+        Marketing site + ecosystem nav hub. Hosts product pages, docs, roadmap, 
+        and diagrams. Navigation to all ecosystem surfaces. CF Pages.
       </div>
       <div class="stack">HTML · CSS · JS · Cloudflare Pages</div>
     </div>
 
-    <div class="eco-card cloud">
-      <div class="name">
-        sync-worker
-        <span class="badge future">future</span>
-      </div>
-      <div class="desc">
-        Cloud sync layer. Receives batched metric summaries from engine, 
-        stores in D1 for the cloud dashboard. Optional — doesn't block local dev.
-      </div>
-      <div class="stack">Cloudflare Workers · D1 · API</div>
-    </div>
-
-    <div class="eco-card cloud">
-      <div class="name">
-        agentflow (web app)
-        <span class="badge future">future</span>
-      </div>
-      <div class="desc">
-        Cloud dashboard. Reads synced metric summaries from D1.
-        Team-wide visibility without raw session data leaving local.
-      </div>
-      <div class="stack">Vite · TypeScript · CF Pages + Workers</div>
-    </div>
   </div>
 </section>
 
 <!-- ═══ DATA FLOW ═══ -->
 <section class="rm-section">
-  <h3>Data Flow</h3>
+  <h3>Product Flow</h3>
   <div class="flow-row">
-    <span class="node local">Chat Deck</span>
-    <span class="arrow">POST /v1/ingest/session</span>
-    <span class="node local">Engine :8377</span>
-    <span class="label">LOCAL (source of truth)</span>
-    <span class="arrow">batched summaries</span>
-    <span class="node cloud">sync-worker</span>
-    <span class="arrow">D1</span>
-    <span class="node prod">Web App</span>
-    <span class="label">CLOUD (dashboard cache)</span>
+    <span class="node primary">🏗️ Architect Chat</span>
+    <span class="arrow">generates template</span>
+    <span class="node store">📋 Agent Template</span>
+    <span class="arrow">refines</span>
+    <span class="node refine">🧩 Chat Deck</span>
+    <span class="arrow">produces</span>
+    <span class="node store">✅ Agent Criteria</span>
+    <span class="arrow">browse</span>
+    <span class="node gateway">📚 Library</span>
+    <span class="arrow">inject</span>
+    <span class="node harness">🎯 Codex / agy / Claude / GHCP / Azure</span>
+    <span class="label">USER JOURNEY</span>
   </div>
-  <div class="flow-row" style="margin-top:0.5rem;">
-    <span class="node local">Engine :8377</span>
+  <div class="flow-row">
+    <span class="node primary">🏗️ Architect Chat</span>
+    <span class="arrow">spawns</span>
+    <span class="node harness">🤖 AGENTS.md Worker</span>
+    <span class="arrow">commits</span>
+    <span class="node store">📦 GitHub</span>
+    <span class="arrow">piped to</span>
+    <span class="node primary">⚙️ Engine :8377</span>
+    <span class="label">ALPHA FLOW</span>
+  </div>
+  <div class="flow-row">
+    <span class="node primary">⚙️ Engine :8377</span>
     <span class="arrow">GET /v1/metrics/summary</span>
-    <span class="node local">VS Code Ext</span>
-    <span class="label">FALLBACK: JSON → SQLite → empty state</span>
+    <span class="node refine">🖥️ Control Plane</span>
+    <span class="arrow">GET /v1/sessions</span>
+    <span class="node refine">📊 Workbench</span>
+    <span class="label">ANALYSIS</span>
   </div>
 </section>
 
@@ -273,231 +234,172 @@
   <div class="timeline">
 
     <div class="tl-item step-done">
-      <div class="num">#1</div>
+      <div class="num">#0</div>
       <h4>Engine HTTP API <span class="status-tag done">done</span></h4>
-      <p>Stdlib HTTP server on <code>:8377</code> wrapping the analysis pipeline. 
-      <code>POST /v1/ingest/session</code>, <code>GET /v1/health</code>, 
-      <code>GET /v1/metrics/summary</code>, <code>GET /v1/sessions</code>.
-      Contract converter normalizes external payloads. Idempotent ingestion.
-      20/20 tests passing.</p>
+      <p>Stdlib HTTP server on <code>:8377</code>. <code>POST /v1/ingest/session</code>, 
+      <code>GET /v1/health</code>, <code>GET /v1/metrics/summary</code>, <code>GET /v1/sessions</code>. 
+      Contract normalizer. Idempotent ingestion. 20/20 tests.</p>
     </div>
 
     <div class="tl-item step-done">
-      <div class="num">#2</div>
+      <div class="num">#0b</div>
       <h4>Chat Deck → Engine Wiring <span class="status-tag done">done</span></h4>
-      <p>On session complete/stop, transforms deck session to engine contract and 
-      POSTs to <code>localhost:8377</code>. If engine is down, queues in 
-      localStorage with 30s retry interval. Fire-and-forget — no UI impact.</p>
-    </div>
-
-    <div class="tl-item step-done">
-      <div class="num">#3a</div>
-      <h4>Ecosystem Mockups <span class="status-tag done">done</span></h4>
-      <p>Control Plane dashboard, Workbench page, Chat Deck landing page, 
-      shared Drift v2 CSS. Pushed to <code>agentflow-site</code> main. 
-      Nav updated across all pages. Awaiting Jules design review.</p>
+      <p>POST on session save, localStorage retry queue, 30s periodic retry. 
+      Fire-and-forget — no UI impact. Ready for re-purposing to agent refinement.</p>
     </div>
 
     <div class="tl-item step-current">
-      <div class="num">#3b</div>
-      <h4>Design Review <span class="status-tag current">in progress</span></h4>
-      <p>Jules (session <code>9335634489885989930</code>) reviewing mockups 
-      against design brief. Checking brand consistency, responsiveness, 
-      component completeness. Will return structured feedback as PR.</p>
+      <div class="num">#1</div>
+      <h4>Architect Chat <span class="status-tag current">top priority</span></h4>
+      <p><strong>Primary user interaction.</strong> Onboard users, generate the one consistent 
+      agent template. Produces data sets, skills, config, agent criteria. 
+      Spawns AGENTS.md subagent (CF Worker alpha) → git commit. 
+      This is where users start every workflow.</p>
     </div>
 
     <div class="tl-item step-next">
+      <div class="num">#2</div>
+      <h4>AGENTS.md Subagent (Alpha Flow) <span class="status-tag next">next</span></h4>
+      <p>CF Worker (or injected sub-agent) that generates AGENTS.md from the Architect 
+      Chat template. Commits to git alongside config, skills, and agent data sets. 
+      The first automated output of the template pipeline.</p>
+    </div>
+
+    <div class="tl-item step-next">
+      <div class="num">#3</div>
+      <h4>Chat Deck — Agent Refinement Mode <span class="status-tag next">next</span></h4>
+      <p>Re-purpose Chat Deck from dual-model chat to agent definition decomposition. 
+      Takes template from Architect Chat, refines criteria through adversarial 
+      conversation. Produces orchestration loops: plan → execute → review. 
+      Generates initial agent criteria for sub-agents.</p>
+    </div>
+
+    <div class="tl-item step-future">
       <div class="num">#4</div>
-      <h4>VS Code Extension ← Engine <span class="status-tag next">next</span></h4>
-      <p>Update <code>MetricsProvider</code> to try HTTP engine first, 
-      fall back to JSON/SQLite. Add workbench webview panels for 
-      prompt analysis and session explorer.</p>
+      <h4>Library Page <span class="status-tag hold">future</span></h4>
+      <p>Browse and deploy gateway. All generated agents, definitions, criteria. 
+      Push to any harness: Codex CLI, agy CLI, Claude, GitHub Copilot, 
+      Azure Copilot Studio, or the engine. Inject criteria as context.</p>
     </div>
 
     <div class="tl-item step-future">
       <div class="num">#5</div>
-      <h4>Sync Worker <span class="status-tag hold">future</span></h4>
-      <p>Thin CF Worker that receives batched summaries from engine, 
-      writes to D1. Enables cloud dashboard without raw session data 
-      leaving local.</p>
+      <h4>Harness Integrations <span class="status-tag hold">future</span></h4>
+      <p>Per-harness push adapters. Codex gets system prompt injection. agy gets 
+      context packet. Azure CS gets API config export. Each harness receives 
+      the same agent criteria, adapted to its interface.</p>
     </div>
 
     <div class="tl-item step-future">
       <div class="num">#6</div>
-      <h4>Web App → D1 <span class="status-tag hold">future</span></h4>
-      <p>Cloud dashboard views that read from sync Worker API instead of 
-      mock data. Team-wide visibility.</p>
+      <h4>Sync Worker + Cloud <span class="status-tag hold">future</span></h4>
+      <p>Batched metric summaries from engine → CF Worker → D1. 
+      Cloud dashboard for team-wide trends. No raw session data leaves local.</p>
     </div>
 
   </div>
 </section>
 
-<!-- ═══ DEPLOYMENT PLAN ═══ -->
+<!-- ═══ DEPLOYMENT ═══ -->
 <section class="rm-section">
   <h3>Deployment Plan</h3>
   <table class="dep-table">
     <thead>
-      <tr><th>Component</th><th>Type</th><th>Host</th><th>URL / Path</th><th>Deploy Method</th></tr>
+      <tr><th>Component</th><th>Type</th><th>Host</th><th>Deploy</th></tr>
     </thead>
     <tbody>
-      <tr>
-        <td><strong>agentflow-site</strong></td>
-        <td>Static site</td>
-        <td>CF Pages</td>
-        <td class="url"><a href="https://agentflow.dev" target="_blank">agentflow.dev</a></td>
-        <td><code>wrangler pages deploy</code> or git push</td>
-      </tr>
-      <tr>
-        <td><strong>agentflow-engine</strong></td>
-        <td>Local service</td>
-        <td>localhost:8377</td>
-        <td class="url"><code>http://127.0.0.1:8377</code></td>
-        <td><code>python -m agentflow_engine</code> or <code>agentflow-engine</code></td>
-      </tr>
-      <tr>
-        <td><strong>agentflow-ai-chat-deck</strong></td>
-        <td>Static HTML</td>
-        <td>file:// or relay</td>
-        <td class="url"><code>file:///mnt/s/Projects/agentflow-ai-chat-deck/drift_chat_suite.html</code></td>
-        <td>Open in browser or via relay server</td>
-      </tr>
-      <tr>
-        <td><strong>agentflow-vscode</strong></td>
-        <td>VS Code ext</td>
-        <td>VS Code</td>
-        <td class="url">VS Code Marketplace (future)</td>
-        <td><code>vsce package</code> + sideload or marketplace</td>
-      </tr>
-      <tr>
-        <td><strong>sync-worker</strong></td>
-        <td>CF Worker</td>
-        <td>CF Workers</td>
-        <td class="url"><code>sync.agentflow.dev</code></td>
-        <td><code>wrangler deploy</code></td>
-      </tr>
-      <tr>
-        <td><strong>agentflow (web)</strong></td>
-        <td>Vite/TS app</td>
-        <td>CF Pages</td>
-        <td class="url"><code>app.agentflow.dev</code></td>
-        <td><code>wrangler pages deploy</code></td>
-      </tr>
+      <tr><td><strong>Architect Chat</strong></td><td>Web app</td><td>CF Pages / local</td><td><code>wrangler pages deploy</code></td></tr>
+      <tr><td><strong>Chat Deck</strong></td><td>Static HTML</td><td>file:// or relay</td><td>Open in browser</td></tr>
+      <tr><td><strong>Library</strong></td><td>Web app</td><td>CF Pages</td><td><code>wrangler pages deploy</code></td></tr>
+      <tr><td><strong>Engine</strong></td><td>Local service</td><td>localhost:8377</td><td><code>python -m agentflow_engine</code></td></tr>
+      <tr><td><strong>AGENTS.md Worker</strong></td><td>CF Worker</td><td>CF Workers</td><td><code>wrangler deploy</code></td></tr>
+      <tr><td><strong>agentflow.site</strong></td><td>Static site</td><td>CF Pages</td><td>git push → auto-deploy</td></tr>
     </tbody>
   </table>
 </section>
 
-<!-- ═══ UAT PLAN ═══ -->
+<!-- ═══ UAT ═══ -->
 <section class="rm-section">
   <h3>UAT Gates</h3>
   <div class="uat-grid">
 
     <div class="uat-card">
-      <h4>Engine API</h4>
-      <div class="when">Gate: now · Owner: TARS + Mike</div>
+      <h4>Architect Chat</h4>
+      <div class="when">Gate: build complete</div>
       <div class="checkbox">
-        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> POST valid session → 201 + stored in SQLite</label>
-        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> POST duplicate → 200 idempotent</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Onboard flow generates consistent agent template</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Template populates data sets, skills, config, criteria</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Spawns AGENTS.md subagent</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Agent definition POSTs to engine</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Template round-trips (update existing)</label>
+      </div>
+    </div>
+
+    <div class="uat-card">
+      <h4>AGENTS.md Subagent</h4>
+      <div class="when">Gate: alpha flow ready</div>
+      <div class="checkbox">
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> CF Worker generates AGENTS.md from template</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Commits AGENTS.md + config + skills to git</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Handles project archetypes</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Round-trip merge (read existing → update)</label>
+      </div>
+    </div>
+
+    <div class="uat-card">
+      <h4>Chat Deck (Refinement)</h4>
+      <div class="when">Gate: re-purpose complete</div>
+      <div class="checkbox">
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Loads template from Architect Chat</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> A/B models decompose problem into sub-tasks</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Generates orchestration loop (plan → execute → review)</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Produces finalized agent criteria</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> POSTs refined criteria to engine</label>
+      </div>
+    </div>
+
+    <div class="uat-card">
+      <h4>Library + Harnesses</h4>
+      <div class="when">Gate: post-build</div>
+      <div class="checkbox">
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Lists all generated agent definitions</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Push to Codex CLI injects criteria as system prompt</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Push to agy CLI injects as context</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Push to git commits AGENTS.md update</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine tracks all harness pushes</label>
+      </div>
+    </div>
+
+    <div class="uat-card">
+      <h4>Integration Smoke</h4>
+      <div class="when">Gate: before each release</div>
+      <div class="checkbox">
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> End-to-end: Architect Chat → template → engine</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Chat Deck → refinement → engine</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Library → push to harness → execution</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine analysis shows correct metrics</label>
+        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> All nav links resolve on ecosystem site</label>
+      </div>
+    </div>
+
+    <div class="uat-card">
+      <h4>Engine (carried forward)</h4>
+      <div class="when">Gate: already verified</div>
+      <div class="checkbox">
+        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> POST agent definition → 201 + stored</label>
+        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> Idempotent ingestion (200 on duplicate)</label>
         <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> Malformed payloads → 400 descriptive errors</label>
-        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> GET /v1/health → status + session count</label>
-        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> GET /v1/metrics/summary → aggregated data</label>
-        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> GET /v1/sessions → paginated list</label>
-        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> A/B comparison payload preserves message ordering</label>
-      </div>
-    </div>
-
-    <div class="uat-card">
-      <h4>Chat Deck → Engine</h4>
-      <div class="when">Gate: now · Owner: TARS + Mike</div>
-      <div class="checkbox">
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Complete session → POST fires to engine</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine down → session queued in localStorage</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine comes up → queue processes within 30s</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> No UI freeze during POST (fire-and-forget)</label>
-      </div>
-    </div>
-
-    <div class="uat-card">
-      <h4>Ecosystem Mockups</h4>
-      <div class="when">Gate: post-Jules review · Owner: Jules → TARS</div>
-      <div class="checkbox">
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Jules design review complete → structured feedback</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Brand consistency across all 4 pages</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Nav links work across all pages</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Responsive down to 375px</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Dark/light theme toggle functional</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Mockups approved by Mike</label>
-      </div>
-    </div>
-
-    <div class="uat-card">
-      <h4>VS Code Extension</h4>
-      <div class="when">Gate: post-build · Owner: TARS + Mike</div>
-      <div class="checkbox">
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine running → MetricsProvider reads from HTTP</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine down → falls back to JSON/SQLite gracefully</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Workbench webview renders metrics</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Architect chat panel generates AGENTS.md</label>
-      </div>
-    </div>
-
-    <div class="uat-card">
-      <h4>Sync Worker &amp; Web App</h4>
-      <div class="when">Gate: future · Owner: TARS + Mike</div>
-      <div class="checkbox">
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine batches and POSTs summaries to sync worker</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Worker writes to D1</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Web app reads from D1 via Worker API</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> No raw session data in cloud</label>
-      </div>
-    </div>
-
-    <div class="uat-card">
-      <h4>Integration Smoke Test</h4>
-      <div class="when">Gate: before each release · Owner: TARS</div>
-      <div class="checkbox">
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Engine starts on clean shell</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Chat deck POSTs to engine successfully</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Sessions appear in engine metrics</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> Control plane mockup renders in browser</label>
-        <label><input type="checkbox" onchange="this.checked=true" onclick="return false"> All nav links resolve</label>
+        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> Metrics + sessions endpoints return data</label>
+        <label><input type="checkbox" checked onchange="this.checked=true" onclick="return false"> A/B comparison preserves message ordering</label>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- ═══ GIT ═══ -->
-<section class="rm-section">
-  <h3>Repository Map</h3>
-  <table class="dep-table">
-    <thead>
-      <tr><th>Repo</th><th>Path</th><th>Status</th><th>Last Commit</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>agentflow-engine</strong></td>
-        <td class="url"><code>/mnt/s/Projects/agentflow-engine/</code></td>
-        <td><span class="badge live">active</span></td>
-        <td class="url"><code>3982a5d</code></td>
-      </tr>
-      <tr>
-        <td><strong>agentflow-ai-chat-deck</strong></td>
-        <td class="url"><code>/mnt/s/Projects/agentflow-ai-chat-deck/</code></td>
-        <td><span class="badge live">active</span></td>
-        <td class="url"><code>cb0d678</code></td>
-      </tr>
-      <tr>
-        <td><strong>agentflow-site</strong></td>
-        <td class="url"><code>/mnt/s/Projects/agentflow-site/</code></td>
-        <td><span class="badge live">active</span></td>
-        <td class="url"><code>e1bd29a</code></td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
 <footer class="rm-footer">
   AgentFlow &middot; Turn prompts into pipelines &middot; <a href="https://agentflow.dev" target="_blank">agentflow.dev</a>
+  &middot; <a href="diagrams/data-flow-journey.html">Data Flow Diagrams</a>
 </footer>
 
 </body>
