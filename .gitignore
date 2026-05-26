@@ -1,0 +1,5 @@
+*.pre-drift
+*.bak
+*.backup
+.DS_Store
+Thumbs.db
